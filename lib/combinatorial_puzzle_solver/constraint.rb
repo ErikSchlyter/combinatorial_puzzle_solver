@@ -24,5 +24,24 @@ module CombinatorialPuzzleSolver
 
       @identifiers.each{|identifier| identifier.dependencies << self }
     end
+
+    # All possible values that can be set within this constraint, each mapped to
+    # the set of identifiers that can have that value without violating any
+    # constraints.
+    # @return [Map<Object,Set<Identifier>>] A map between each possible value
+    #                                       and the set of identifiers that can
+    #                                       have it.
+    def possible_values
+      values = Hash.new{|value,ids| value[ids] = Set.new }
+
+      @identifiers.each{|identifier|
+        identifier.possible_values.each{|value|
+          values[value] << identifier
+        }
+      }
+
+      values
+    end
+
   end
 end

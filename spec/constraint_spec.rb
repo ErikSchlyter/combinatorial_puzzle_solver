@@ -21,5 +21,31 @@ module CombinatorialPuzzleSolver
         expect(constraint.label).to match("some debug label")
       end
     end
+
+    describe "possible_values" do
+      let!(:puzzle)     { SingleRowPuzzle.new([1,2,3]) }
+      let!(:constraint) { puzzle.constraints.first }
+
+      context "when the constraint's identifiers doesn't contain any value" do
+        it "should map between all values and sets of all of identifiers" do
+          expect(constraint.possible_values).to match(
+            { 1 => puzzle.identifiers,
+              2 => puzzle.identifiers,
+              3 => puzzle.identifiers }
+          )
+        end
+      end
+      context "when one of the identifier has a value" do
+        it "should return a Hash between all possible values and their identifiers" do
+          puzzle.identifiers[0].set(3)
+          expect(constraint.possible_values).to match(
+            { 1 => puzzle.identifiers[1..2],
+              2 => puzzle.identifiers[1..2] }
+          )
+
+        end
+      end
+
+    end
   end
 end
