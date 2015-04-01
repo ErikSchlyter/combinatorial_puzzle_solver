@@ -71,9 +71,9 @@ module CombinatorialPuzzleSolver
       @possible_values.size == 1
     end
 
-    # @return [String] a string representation of this identifier
+    # @return [String] a string representation of this identifier, '[index:value]'.
     def to_s
-      @puzzle.identifier_to_s(self)
+      "[#{@puzzle.identifiers.index(self)}:#{value}]"
     end
 
     # Pushes the state of the identifier onto the given stack, which is useful

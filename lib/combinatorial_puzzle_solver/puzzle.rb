@@ -54,12 +54,6 @@ module CombinatorialPuzzleSolver
       @identifiers.reverse_each{|identifier| identifier.pop_state(@state_stack) }
     end
 
-    # A string representation of a identifier, in the context of this puzzle.
-    # @return [String] Default representation is '[index:value]'.
-    def identifier_to_s(identifier)
-      "[#{identifiers.index(identifier)}:#{identifier.value}]"
-    end
-
   end
 
 end
