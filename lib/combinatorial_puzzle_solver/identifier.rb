@@ -28,7 +28,7 @@ module CombinatorialPuzzleSolver
       fail "Value for #{to_s} already set" unless @value.nil?
       @value = value
       @possible_values.clear
-      dependent_identifiers.select{|identifier| identifier.cannot_set!(value)}
+      dependent_identifiers.select{|identifier| identifier.cannot_be!(value)}
     end
 
     # All other identifiers that are coverted by this identifier's constraints.
@@ -41,7 +41,7 @@ module CombinatorialPuzzleSolver
     # reduce the set of possible values.
     # @param value [Object] The value that this identifier can't have
     # @return [true,false] true if the identifier becomes resolvable.
-    def cannot_set!(value)
+    def cannot_be!(value)
       if @possible_values.delete(value) then
         return resolved?
       end
@@ -55,7 +55,7 @@ module CombinatorialPuzzleSolver
     #                             resolvable because of this action.
     def must_be!(value)
       @possible_values = [value]
-      dependent_identifiers.select{|identifier| identifier.cannot_set!(value) }
+      dependent_identifiers.select{|identifier| identifier.cannot_be!(value) }
     end
 
     # @return [true,false] True if its possible values contains a single value.

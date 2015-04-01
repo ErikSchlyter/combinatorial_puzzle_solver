@@ -25,7 +25,7 @@ module CombinatorialPuzzleSolver
     describe "#resolve!" do
       before {
         puzzle.identifiers[0].must_be!(1)
-        puzzle.identifiers[1].cannot_set!(3)
+        puzzle.identifiers[1].cannot_be!(3)
 
         expect(puzzle.identifiers[0].possible_values).to match_array([1])
         expect(puzzle.identifiers[1].possible_values).to match_array([2])

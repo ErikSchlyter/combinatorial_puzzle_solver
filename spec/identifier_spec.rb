@@ -86,18 +86,18 @@ module CombinatorialPuzzleSolver
       end
     end
 
-    describe "#cannot_set!" do
+    describe "#cannot_be!" do
       it "should remove the value from its set of possible values" do
-        identifier.cannot_set!(3)
+        identifier.cannot_be!(3)
         expect(identifier.possible_values).to match_array([1, 2, 4, 5])
       end
 
       it "should return true if the identifier becomes resolvable" do
-        expect(identifier.cannot_set!(1)).to be false
-        expect(identifier.cannot_set!(2)).to be false
-        expect(identifier.cannot_set!(3)).to be false
-        expect(identifier.cannot_set!(4)).to be true
-        expect(identifier.cannot_set!(4)).to be false # already resolvable
+        expect(identifier.cannot_be!(1)).to be false
+        expect(identifier.cannot_be!(2)).to be false
+        expect(identifier.cannot_be!(3)).to be false
+        expect(identifier.cannot_be!(4)).to be true
+        expect(identifier.cannot_be!(4)).to be false # already resolvable
       end
     end
 
