@@ -26,24 +26,25 @@ module CombinatorialPuzzleSolver
     end
 
     # Notifies identifiers if a value can only be set to that single identifier
-    # wihtin the constraint.
-    # @yieldparam identifier [Identifier] An Identifier that was resolved.
-    # @yieldparam value [Object] The value that the identifier was resolved to.
+    # within the constraint.
+    # @return [Hash<Identifier,Object>] The identifiers that was resolved
     def resolve!
+      solutions = {}
+
       possible_values.each{|value, identifiers|
         if identifiers.size == 1 then # this identifier is resolvable
           resolvable_identifier = identifiers.first
           unless resolvable_identifier.resolved? then
 
-            yield resolvable_identifier, value if block_given?
-            resolved = resolvable_identifier.must_be!(value)
-
-            resolved.each{|resolved_id, resolved_value|
-              yield resolved_id, resolved_value if block_given?
+            solutions[resolvable_identifier] = value
+            resolvable_identifier.must_be!(value).each{|identifier|
+              solutions[identifier] = identifier.possible_values.first
             }
           end
         end
       }
+
+      solutions
     end
 
     # All possible values that can be set within this constraint, each mapped to

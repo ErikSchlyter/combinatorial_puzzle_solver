@@ -40,10 +40,8 @@ module CombinatorialPuzzleSolver
         expect(puzzle.identifiers[2].possible_values).to match_array([3])
       end
 
-      it "should yield the solutions it finds to a block" do
-        expect {|block|
-          constraint.resolve!(&block)
-        }.to yield_with_args(puzzle.identifiers[2], 3)
+      it "should return Hash with the solutions it found" do
+        expect(constraint.resolve!).to match({ puzzle.identifiers[2] => 3 })
       end
     end
 
