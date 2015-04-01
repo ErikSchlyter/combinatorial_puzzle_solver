@@ -67,5 +67,28 @@ module CombinatorialPuzzleSolver
     def to_s
       @puzzle.identifier_to_s(self)
     end
+
+    # Pushes the state of the identifier onto the given stack, which is useful
+    # if you want to set new values or derive possibilities while being able to
+    # revert.
+    # @see pop_state
+    # @param stack [Array] The stack to push the state onto.
+    def push_state(stack)
+      begin
+        stack.push(@value.dup)
+      rescue TypeError
+        stack.push(@value)
+      end
+      stack.push(Array.new(@possible_values))
+    end
+
+    # Pops the state of the identifier from the given stack.
+    # @see push_state
+    # @param stack [Array] The stack to pop the state from.
+    def pop_state(stack)
+      @possible_values = stack.pop
+      @value = stack.pop
+    end
+
   end
 end

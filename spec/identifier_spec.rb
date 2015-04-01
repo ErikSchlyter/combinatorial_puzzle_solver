@@ -121,5 +121,33 @@ module CombinatorialPuzzleSolver
         expect(puzzle.identifiers[1].must_be!(2)).to match_array([identifier])
       end
     end
+
+    describe "#push_state" do
+      it "should push value and possible values to a given stack" do
+        stack = []
+
+        identifier.push_state(stack)
+        expect(stack[0]).to eq(nil)
+        expect(stack[1]).to match_array([1,2,3,4,5])
+
+        identifier.set(2)
+
+        identifier.push_state(stack)
+        expect(stack[2]).to eq(2)
+        expect(stack[3]).to match_array([])
+      end
+    end
+
+    describe "#pop_state" do
+      it "should pop the stack and set value and possible values" do
+        stack = []
+        identifier.push_state(stack)
+        identifier.set(2)
+        identifier.pop_state(stack)
+
+        expect(identifier.value).to eq(nil)
+        expect(identifier.possible_values).to match_array([1,2,3,4,5])
+      end
+    end
   end
 end

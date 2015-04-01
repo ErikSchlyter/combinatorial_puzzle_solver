@@ -39,6 +39,20 @@ module CombinatorialPuzzleSolver
         expect(puzzle.values).to match_array(values)
       end
     end
+
+    describe "push and pop states" do
+      it "store the state on the stack and be able to retrieve it" do
+        puzzle.identifiers[0].cannot_be!(2)
+        puzzle.identifiers[0].cannot_be!(3)
+
+        puzzle.push_state
+        puzzle.identifiers[0].set(1)
+        puzzle.pop_state
+
+        expect(puzzle.identifiers[0].value).to be_nil
+        expect(puzzle.identifiers[0].possible_values).to match_array([1,4,5])
+      end
+    end
   end
 
 

@@ -36,6 +36,22 @@ module CombinatorialPuzzleSolver
       unless @constraints.all?{|constraint| constraint.is_a?(Constraint)} then
         fail "The constraint block may only contain Constraint"
       end
+
+      @state_stack = []
+    end
+
+    # Pushes the entire state of the puzzle to a stack, which means you can set
+    # values and resolve possibilities and then just pop the state to undo all
+    # actions.
+    # @see pop_state
+    def push_state
+      @identifiers.each{|identifier| identifier.push_state(@state_stack) }
+    end
+
+    # Pops the entire state of the puzzle from the stack
+    # @see push_state
+    def pop_state
+      @identifiers.reverse_each{|identifier| identifier.pop_state(@state_stack) }
     end
 
     # A string representation of a identifier, in the context of this puzzle.
