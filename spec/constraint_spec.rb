@@ -40,20 +40,11 @@ module CombinatorialPuzzleSolver
         expect(puzzle.identifiers[2].possible_values).to match_array([3])
       end
 
-      it "should omit identifiers that are already resolved (given as argument)" do
-        constraint.resolve!({puzzle.identifiers[2] => 'whatever'})
-
-        expect(puzzle.identifiers[2].possible_values).to match_array([2, 3])
-      end
-
       it "should yield the solutions it finds to a block" do
-        already_given_solutions = {puzzle.identifiers[0] => 1}
-
         expect {|block|
-          constraint.resolve!(already_given_solutions, &block)
+          constraint.resolve!(&block)
         }.to yield_with_args(puzzle.identifiers[2], 3)
       end
-
     end
 
     describe "possible_values" do

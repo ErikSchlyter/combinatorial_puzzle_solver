@@ -40,12 +40,10 @@ module CombinatorialPuzzleSolver
     # Notifies this identifier that it cannot have the given value, which will
     # reduce the set of possible values.
     # @param value [Object] The value that this identifier can't have
-    # @return [true,false] true if the identifier becomes resolvable, which
-    #                      means that its set of possible values now only
-    #                      contain one single value.
+    # @return [true,false] true if the identifier becomes resolvable.
     def cannot_set!(value)
       if @possible_values.delete(value) then
-        return @possible_values.size == 1
+        return resolved?
       end
       false
     end
@@ -58,6 +56,11 @@ module CombinatorialPuzzleSolver
     def must_be!(value)
       @possible_values = [value]
       dependent_identifiers.select{|identifier| identifier.cannot_set!(value) }
+    end
+
+    # @return [true,false] True if its possible values contains a single value.
+    def resolved?
+      @possible_values.size == 1
     end
 
     # @return [String] a string representation of this identifier
