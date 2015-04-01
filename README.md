@@ -1,4 +1,4 @@
-# CombinatorialPuzzleSolver
+# Combinatorial Puzzle Solver
 
 A resolver of combinatorial number-placement puzzles, like Sudoku.
 
@@ -20,7 +20,7 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+Not fully functional as of yet.
 
 ## Development
 
