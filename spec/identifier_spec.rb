@@ -99,6 +99,19 @@ module CombinatorialPuzzleSolver
         expect(identifier.cannot_be!(4)).to be true
         expect(identifier.cannot_be!(4)).to be false # already resolvable
       end
+
+      it "should raise inconsistency error if it already has the given value" do
+        identifier.set(1)
+        expect{ identifier.cannot_be!(1) }.to raise_error(Inconsistency)
+      end
+
+      it "should raise inconsistency error if there's no possible solutions" do
+        identifier.cannot_be!(1)
+        identifier.cannot_be!(2)
+        identifier.cannot_be!(3)
+        identifier.cannot_be!(4)
+        expect{ identifier.cannot_be!(5) }.to raise_error(Inconsistency)
+      end
     end
 
     describe "#must_be" do

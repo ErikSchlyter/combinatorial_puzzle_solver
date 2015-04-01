@@ -1,6 +1,10 @@
 
 module CombinatorialPuzzleSolver
 
+  # The current state of the puzzle has become inconsistent and unresolvable.
+  class Inconsistency < RuntimeError
+  end
+
   # Designates the smallest unit that should be mapped to a number, e.g. a cell
   # in a Sudoku puzzle.
   class Identifier
@@ -41,8 +45,12 @@ module CombinatorialPuzzleSolver
     # reduce the set of possible values.
     # @param value [Object] The value that this identifier can't have
     # @return [true,false] true if the identifier becomes resolvable.
+    # @raise [Inconsistency] If this action makes the puzzle inconsistent.
     def cannot_be!(value)
+      raise Inconsistency if @value == value
+
       if @possible_values.delete(value) then
+        raise Inconsistency if @value.nil? && @possible_values.empty?
         return resolved?
       end
       false
