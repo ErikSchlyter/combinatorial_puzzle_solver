@@ -35,7 +35,7 @@ module CombinatorialPuzzleSolver
       dependent_identifiers.select{|identifier| identifier.cannot_be!(value)}
     end
 
-    # All other identifiers that are coverted by this identifier's constraints.
+    # All other identifiers that are covered by this identifier's constraints.
     # @return [Array<Identifier>]
     def dependent_identifiers
       @dependencies.collect{|constraint| constraint.identifiers}.flatten.uniq - [self]
