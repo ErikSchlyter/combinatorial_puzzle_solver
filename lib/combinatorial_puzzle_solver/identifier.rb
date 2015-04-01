@@ -44,9 +44,20 @@ module CombinatorialPuzzleSolver
     #                      means that its set of possible values now only
     #                      contain one single value.
     def cannot_set!(value)
-      @possible_values.delete(value)
+      if @possible_values.delete(value) then
+        return @possible_values.size == 1
+      end
+      false
+    end
 
-      @possible_values.size == 1
+    # Notifies that this identifier must be a certain value, which implies that
+    # dependent identifiers can't have the same value.
+    # @param value [Object] The value that this identifier must be set to.
+    # @return [Array<Identifier>] The dependent identifiers that become
+    #                             resolvable because of this action.
+    def must_be!(value)
+      @possible_values = [value]
+      dependent_identifiers.select{|identifier| identifier.cannot_set!(value) }
     end
 
     # @return [String] a string representation of this identifier

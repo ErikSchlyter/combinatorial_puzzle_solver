@@ -97,8 +97,29 @@ module CombinatorialPuzzleSolver
         expect(identifier.cannot_set!(2)).to be false
         expect(identifier.cannot_set!(3)).to be false
         expect(identifier.cannot_set!(4)).to be true
+        expect(identifier.cannot_set!(4)).to be false # already resolvable
       end
     end
 
+    describe "#must_be" do
+      it "should remove all values except given from set of possible values" do
+        identifier.must_be!(3)
+        expect(identifier.possible_values).to match_array([3])
+      end
+
+      it "should remove that value from dependent identifiers' possibilities" do
+        identifier.must_be!(3)
+        (1..4).each{|i|
+          expect(puzzle.identifiers[i].possible_values).to match_array([1,2,4,5])
+        }
+      end
+
+      it "should return an array of identifiers that becomes resolvable" do
+        expect(puzzle.identifiers[4].must_be!(5)).to match_array([])
+        expect(puzzle.identifiers[3].must_be!(4)).to match_array([])
+        expect(puzzle.identifiers[2].must_be!(3)).to match_array([])
+        expect(puzzle.identifiers[1].must_be!(2)).to match_array([identifier])
+      end
+    end
   end
 end
