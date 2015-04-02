@@ -28,7 +28,10 @@ module CombinatorialPuzzleSolver
     end
 
     # Sets the value for this identifier
-    def set(value)
+    # @param value [Object] The value to set.
+    # @raise [RuntimeError] If this identifier already has a value set.
+    # @raise [Inconsistency] If this action makes the puzzle inconsistent.
+    def set!(value)
       fail "Value for #{to_s} already set" unless @value.nil?
       @value = value
       @possible_values.clear

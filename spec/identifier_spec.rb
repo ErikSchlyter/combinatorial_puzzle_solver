@@ -32,10 +32,10 @@ module CombinatorialPuzzleSolver
       end
     end
 
-    describe "#set" do
+    describe "#set!" do
       before {
         expect(identifier.value).to be_nil
-        identifier.set(1)
+        identifier.set!(1)
       }
 
       it "should set the given value" do
@@ -43,7 +43,7 @@ module CombinatorialPuzzleSolver
       end
 
       it "should fail if a value is already set" do
-        expect{ identifier.set(1) }.to raise_error
+        expect{ identifier.set!(1) }.to raise_error
       end
 
       it "should clear all possible values" do
@@ -57,9 +57,9 @@ module CombinatorialPuzzleSolver
       end
 
       it "should return an array of the identifiers that becomes resolvable" do
-        expect(puzzle.identifiers[1].set(2)).to be_empty
-        expect(puzzle.identifiers[2].set(3)).to be_empty
-        expect(puzzle.identifiers[3].set(4)).to match_array([puzzle.identifiers[4]])
+        expect(puzzle.identifiers[1].set!(2)).to be_empty
+        expect(puzzle.identifiers[2].set!(3)).to be_empty
+        expect(puzzle.identifiers[3].set!(4)).to match_array([puzzle.identifiers[4]])
       end
     end
 
@@ -101,7 +101,7 @@ module CombinatorialPuzzleSolver
       end
 
       it "should raise inconsistency error if it already has the given value" do
-        identifier.set(1)
+        identifier.set!(1)
         expect{ identifier.cannot_be!(1) }.to raise_error(Inconsistency)
       end
 
@@ -143,7 +143,7 @@ module CombinatorialPuzzleSolver
         expect(stack[0]).to eq(nil)
         expect(stack[1]).to match_array([1,2,3,4,5])
 
-        identifier.set(2)
+        identifier.set!(2)
 
         identifier.push_state(stack)
         expect(stack[2]).to eq(2)
@@ -155,7 +155,7 @@ module CombinatorialPuzzleSolver
       it "should pop the stack and set value and possible values" do
         stack = []
         identifier.push_state(stack)
-        identifier.set(2)
+        identifier.set!(2)
         identifier.pop_state(stack)
 
         expect(identifier.value).to eq(nil)

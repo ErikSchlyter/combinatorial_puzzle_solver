@@ -46,7 +46,7 @@ module CombinatorialPuzzleSolver
         puzzle.identifiers[0].cannot_be!(3)
 
         puzzle.push_state
-        puzzle.identifiers[0].set(1)
+        puzzle.identifiers[0].set!(1)
         puzzle.pop_state
 
         expect(puzzle.identifiers[0].value).to be_nil

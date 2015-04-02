@@ -59,7 +59,7 @@ module CombinatorialPuzzleSolver
 
       context "when one of the identifier has a value" do
         it "should return a Hash between all possible values and their identifiers" do
-          puzzle.identifiers[0].set(3)
+          puzzle.identifiers[0].set!(3)
           expect(constraint.possible_values).to match(
             { 1 => puzzle.identifiers[1..2],
               2 => puzzle.identifiers[1..2] }
