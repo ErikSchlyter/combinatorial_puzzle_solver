@@ -135,6 +135,21 @@ module CombinatorialPuzzleSolver
       end
     end
 
+    describe "#resolved?" do
+      it "should return true if identifier has a unique possible value." do
+        identifier.cannot_be!(5)
+        identifier.cannot_be!(4)
+        identifier.cannot_be!(3)
+        identifier.cannot_be!(2)
+        expect(identifier.resolved?).to be true
+      end
+
+      it "should return true if identifier has a value" do
+        identifier.set!(1)
+        expect(identifier.resolved?).to be true
+      end
+    end
+
     describe "#push_state" do
       it "should push value and possible values to a given stack" do
         stack = []

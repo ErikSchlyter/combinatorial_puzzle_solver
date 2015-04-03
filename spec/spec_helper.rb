@@ -19,5 +19,16 @@ module CombinatorialPuzzleSolver
     end
   end
 
+  # A test puzzle consisting of n identifiers and n-1 constraints, where each
+  # identifier can have 2 different values. The identifiers are chained together
+  # with constraints as such: [0, 1], [1, 2], [2, 3] ... [n-1, n], which means
+  # that if any identifier has a value the entire chain should be resolvable.
+  class ChainConstraintPuzzle < Puzzle
+    def initialize(size)
+      super(size, [1,2]){|dentifiers|
+        identifiers.each_cons(2).collect{|a,b| Constraint.new([a,b]) }
+      }
+    end
+  end
 end
 

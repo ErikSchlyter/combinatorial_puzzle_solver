@@ -69,9 +69,9 @@ module CombinatorialPuzzleSolver
       dependent_identifiers.select{|identifier| identifier.cannot_be!(value) }
     end
 
-    # @return [true,false] True if its possible values contains a single value.
+    # @return [true,false] True if set or only has one possible value.
     def resolved?
-      @possible_values.size == 1
+      @value != nil || @possible_values.size == 1
     end
 
     # @return [String] a string representation of this identifier, '[index:value]'.

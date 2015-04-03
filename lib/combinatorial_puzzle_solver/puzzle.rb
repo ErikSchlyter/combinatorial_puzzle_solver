@@ -54,6 +54,33 @@ module CombinatorialPuzzleSolver
       @identifiers.reverse_each{|identifier| identifier.pop_state(@state_stack) }
     end
 
-  end
+    # Tries to resolve all constraints until none of them yield new solutions.
+    # @return [Hash<Identifier,Object>] A Hash mapping all resolved identifiers.
+    def resolve_constraints!
+      solutions = {}
+      loop do
+        found_any = false
 
+        @constraints.each{|constraint|
+          new_solutions = constraint.resolve!
+          unless new_solutions.empty? then
+            found_any = true
+            solutions.merge!(new_solutions)
+          end
+        }
+        break unless found_any
+      end
+      solutions
+    end
+
+    # @return [true,false] True if all identifiers have been resolved.
+    def resolved?
+      @identifiers.all?{|identifier| identifier.resolved? }
+    end
+
+    # @return [String] A string listing all identifiers and their possible values.
+    def inspect
+      @identifiers.collect{|id| "#{id.to_s} #{id.possible_values}" }.join("\n")
+    end
+  end
 end
