@@ -69,15 +69,14 @@ module CombinatorialPuzzleSolver
         ids = puzzle.identifiers
 
         dependencies = {
-          # ids         0       1       2       3       4       5
-          # cons. 0    ###     ###     ###     ###
-          # cons. 1                    ###     ###     ###     ###
-          ids[0] => [         ids[1], ids[2], ids[3]                 ],
-          ids[1] => [ ids[0],         ids[2], ids[3]                 ],
-          ids[2] => [ ids[0], ids[1],         ids[3], ids[4], ids[5] ],
-          ids[3] => [ ids[0], ids[1], ids[2],         ids[4], ids[5] ],
-          ids[4] => [                 ids[2], ids[3],         ids[5] ],
-          ids[5] => [                 ids[2], ids[3], ids[4]         ]
+          # ids         0       1       2       3       4
+          # cons. 0    ###     ###     ###
+          # cons. 1                    ###     ###     ###
+          ids[0] => [         ids[1], ids[2]                 ],
+          ids[1] => [ ids[0],         ids[2]                 ],
+          ids[2] => [ ids[0], ids[1],         ids[3], ids[4] ],
+          ids[3] => [                 ids[2],         ids[4],],
+          ids[4] => [                 ids[2], ids[3],        ]
         }
 
         dependencies.each{|id, deps|
@@ -92,12 +91,12 @@ module CombinatorialPuzzleSolver
         expect(identifier.possible_values).to match_array([1, 2, 4, 5])
       end
 
-      it "should return true if the identifier becomes resolvable" do
-        expect(identifier.cannot_be!(1)).to be false
-        expect(identifier.cannot_be!(2)).to be false
-        expect(identifier.cannot_be!(3)).to be false
-        expect(identifier.cannot_be!(4)).to be true
-        expect(identifier.cannot_be!(4)).to be false # already resolvable
+      it "should an array of the identifiers that becomes resolvable" do
+        expect(identifier.cannot_be!(1)).to be_empty
+        expect(identifier.cannot_be!(2)).to be_empty
+        expect(identifier.cannot_be!(3)).to be_empty
+        expect(identifier.cannot_be!(4)).to match_array([identifier])
+        expect(identifier.cannot_be!(4)).to be_empty # already resolvable
       end
 
       it "should raise inconsistency error if it already has the given value" do
@@ -128,10 +127,11 @@ module CombinatorialPuzzleSolver
       end
 
       it "should return an array of identifiers that becomes resolvable" do
-        expect(puzzle.identifiers[4].must_be!(5)).to match_array([])
-        expect(puzzle.identifiers[3].must_be!(4)).to match_array([])
-        expect(puzzle.identifiers[2].must_be!(3)).to match_array([])
-        expect(puzzle.identifiers[1].must_be!(2)).to match_array([identifier])
+        identifiers = puzzle.identifiers
+        expect(identifiers[4].must_be!(5)).to match_array([identifiers[4]])
+        expect(identifiers[3].must_be!(4)).to match_array([identifiers[3]])
+        expect(identifiers[2].must_be!(3)).to match_array([identifiers[2]])
+        expect(identifiers[1].must_be!(2)).to match_array(identifiers[0..1])
       end
     end
 

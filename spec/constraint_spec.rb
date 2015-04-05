@@ -24,11 +24,11 @@ module CombinatorialPuzzleSolver
 
     describe "#resolve!" do
       before {
-        puzzle.identifiers[0].must_be!(1)
-        puzzle.identifiers[1].cannot_be!(3)
+        puzzle.identifiers[1].cannot_be!(1)
+        puzzle.identifiers[2].cannot_be!(1)
 
-        expect(puzzle.identifiers[0].possible_values).to match_array([1])
-        expect(puzzle.identifiers[1].possible_values).to match_array([2])
+        expect(puzzle.identifiers[0].possible_values).to match_array([1,2,3])
+        expect(puzzle.identifiers[1].possible_values).to match_array([2, 3])
         expect(puzzle.identifiers[2].possible_values).to match_array([2, 3])
       }
 
@@ -36,12 +36,12 @@ module CombinatorialPuzzleSolver
         constraint.resolve!
 
         expect(puzzle.identifiers[0].possible_values).to match_array([1])
-        expect(puzzle.identifiers[1].possible_values).to match_array([2])
-        expect(puzzle.identifiers[2].possible_values).to match_array([3])
+        expect(puzzle.identifiers[1].possible_values).to match_array([2, 3])
+        expect(puzzle.identifiers[2].possible_values).to match_array([2, 3])
       end
 
       it "should return Hash with the solutions it found" do
-        expect(constraint.resolve!).to match({ puzzle.identifiers[2] => 3 })
+        expect(constraint.resolve!).to match({ puzzle.identifiers[0] => 1 })
       end
     end
 

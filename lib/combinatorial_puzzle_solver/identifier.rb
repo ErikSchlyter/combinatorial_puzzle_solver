@@ -35,7 +35,22 @@ module CombinatorialPuzzleSolver
       fail "Value for #{to_s} already set" unless @value.nil?
       @value = value
       @possible_values.clear
-      dependent_identifiers.select{|identifier| identifier.cannot_be!(value)}
+      dependent_identifiers_cannot_be!(value)
+    end
+
+    # Notifies dependent identifiers that they can't have the given value.
+    # @param value [Object] The value that the identifiers cannot have.
+    # @param resolved [Array<Identifier>] An optional array to store the identifiers
+    #                                     that becomes resolvable. It will be created
+    #                                     if not given.
+    # @return [Array<Identifier>] The array of the identifiers that became resolvable
+    #                             because of this action.
+    # @raise [Inconsistency] If this action makes the puzzle inconsistent.
+    # @see #cannot_be!
+    # @see #resolved?
+    def dependent_identifiers_cannot_be!(value, resolved=[])
+      dependent_identifiers.each{|identifier| identifier.cannot_be!(value, resolved)}
+      resolved
     end
 
     # All other identifiers that are covered by this identifier's constraints.
@@ -45,31 +60,43 @@ module CombinatorialPuzzleSolver
     end
 
     # Notifies this identifier that it cannot have the given value, which will
-    # reduce the set of possible values.
+    # reduce its set of possible values.
     # @param value [Object] The value that this identifier can't have
-    # @return [true,false] true if the identifier becomes resolvable.
+    # @param resolved [Array<Identifier>] An optional array to store the identifiers
+    #                                     that becomes resolvable. It will be created
+    #                                     if not given.
+    # @return [Array<Identifier>] The array of the identifiers that became resolvable
+    #                             because of this action.
     # @raise [Inconsistency] If this action makes the puzzle inconsistent.
-    def cannot_be!(value)
+    # @see #must_be!
+    def cannot_be!(value, resolved=[])
       raise Inconsistency if @value == value
 
       if @possible_values.delete(value) then
-        raise Inconsistency if @value.nil? && @possible_values.empty?
-        return resolved?
+        raise Inconsistency if @possible_values.empty?
+        must_be!(@possible_values.first, resolved) if @possible_values.size == 1
       end
-      false
+      resolved
     end
 
-    # Notifies that this identifier must be a certain value, which implies that
+    # Notifies this identifier that it must have a certain value, which implies that
     # dependent identifiers can't have the same value.
-    # @param value [Object] The value that this identifier must be set to.
-    # @return [Array<Identifier>] The dependent identifiers that become
-    #                             resolvable because of this action.
-    def must_be!(value)
+    # @param value [Object] The only value that this identifier can have.
+    # @param resolved [Array<Identifier>] An optional array to store the identifiers
+    #                                     that becomes resolvable. It will be created
+    #                                     if not given.
+    # @return [Array<Identifier>] The array of the identifiers that became resolvable
+    #                             because of this action.
+    # @raise [Inconsistency] If this action makes the puzzle inconsistent.
+    # @see #cannot_be!
+    def must_be!(value, resolved=[])
       @possible_values = [value]
-      dependent_identifiers.select{|identifier| identifier.cannot_be!(value) }
+      resolved << self
+      dependent_identifiers_cannot_be!(value, resolved)
     end
 
-    # @return [true,false] True if set or only has one possible value.
+    # @return [true,false] True if identifier has a value or if it has only has one
+    #                      possible value.
     def resolved?
       @value != nil || @possible_values.size == 1
     end

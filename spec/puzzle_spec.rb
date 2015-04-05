@@ -56,18 +56,18 @@ module CombinatorialPuzzleSolver
 
     describe "resolve_constraints!" do
       it "should resolve all constraints and return a Hash of resolved identifiers" do
-        puzzle = ChainConstraintPuzzle.new(15)
-        puzzle.identifiers.last.set!(1)
-        expect(puzzle.identifiers[14].resolved?).to be true
-        expect(puzzle.identifiers[13].resolved?).to be true
-        expect(puzzle.identifiers[12].resolved?).to be false
+        puzzle = TwoConstraintPuzzle.new
+        puzzle.identifiers[0].cannot_be!(1)
+        puzzle.identifiers[1].cannot_be!(1)
+        puzzle.identifiers[3].cannot_be!(2)
 
         solutions = puzzle.resolve_constraints!
 
-        expect(solutions).to be_a(Hash)
-        expect(solutions.size).to equal(13)
-        expect(solutions.keys).to match_array(puzzle.identifiers[0..12])
-        expect(puzzle.resolved?).to be true
+        expect(solutions).to match({
+          puzzle.identifiers[2] => 1,
+          puzzle.identifiers[3] => 3,
+          puzzle.identifiers[4] => 2
+        })
       end
     end
   end
