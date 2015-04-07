@@ -37,7 +37,7 @@ module CombinatorialPuzzleSolver
       end
     end
 
-    describe "possible_values" do
+    describe "#possible_values" do
 
       context "when the constraint's identifiers doesn't contain any value" do
         it "should map between all values and sets of all of identifiers" do

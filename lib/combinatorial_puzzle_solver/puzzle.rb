@@ -43,15 +43,24 @@ module CombinatorialPuzzleSolver
     # Pushes the entire state of the puzzle to a stack, which means you can set
     # values and resolve possibilities and then just pop the state to undo all
     # actions.
-    # @see pop_state
+    # @see pop_state!
     def push_state
       @identifiers.each{|identifier| identifier.push_state(@state_stack) }
     end
 
     # Pops the entire state of the puzzle from the stack
+    # @raise [RuntimeError] if the stack is empty.
     # @see push_state
-    def pop_state
-      @identifiers.reverse_each{|identifier| identifier.pop_state(@state_stack) }
+    def pop_state!
+      fail "Stack is empty" if @state_stack.empty?
+      @identifiers.reverse_each{|identifier| identifier.pop_state!(@state_stack) }
+    end
+
+    # Pops a state from the stack and discards it.
+    # @raise [RuntimeError] if the stack is empty.
+    def pop_and_skip_state!
+      fail "Stack is empty" if @state_stack.empty?
+      @identifiers.each{|identifier| identifier.pop_and_skip_state(@state_stack) }
     end
 
     # Tries to resolve all constraints until none of them yield new solutions.
@@ -72,6 +81,76 @@ module CombinatorialPuzzleSolver
         break unless found_any
       end
       solutions
+    end
+
+    # Solves the puzzle by resolving all constraints, and tries to {#resolve_with!}
+    # the unresolved identifiers recursively if constraint resolution is not enough
+    # to solve the puzzle.
+    #
+    # Any trial and error attempt that fails during a call to {#resolve_with!} will
+    # be yielded with identifier and value.
+    # @return [true,false] true if the puzzle is solved, false if it is inconsistent.
+    # @yieldparam identifier [Identifier] any identifier that was tried and failed.
+    # @yieldparam value [Object] any value that was tried and failed.
+    # @see #resolve_with!
+    def resolve!(&fail_block)
+      begin
+        resolve_constraints!
+
+        unresolved_identifiers.each{|identifier|
+          while !identifier.resolved? do
+            maybe_value = identifier.possible_values.first
+
+            if resolve_with!(identifier, maybe_value, &fail_block) then
+              return true
+            else
+              identifier.cannot_be!(maybe_value)
+              resolve_constraints!
+            end
+          end
+        }
+      rescue Inconsistency
+        return false
+      end
+
+      resolved?
+    end
+
+    # Tries to solve the puzzle recursively by invoking #resolve! with the assumption
+    # that the given value is the only value the identifier can have.
+    #
+    # If the puzzle becomes unsolvable it returns false and the state is reverted.
+    # If a solution is found it returns true, and the puzzle is left in the state of
+    # the accepted solution.
+    #
+    # Any attempt that fails will be yielded with identifier and value.
+    # @param identifier [Identifier] the identifier to try.
+    # @param value [Object] the value to try.
+    # @yieldparam identifier [Identifier] any identifier that was tried and failed.
+    # @yieldparam value [Object] any value that was tried and failed.
+    # @see #resolve!
+    def resolve_with!(identifier, value)
+      begin
+        push_state
+        identifier.must_be!(value)
+
+        if resolve! then
+          pop_and_skip_state!
+          return true
+        end
+
+      rescue Inconsistency
+        yield identifier, value if block_given?
+        pop_state!
+      end
+
+      false
+    end
+
+    # @return [Array<Identifier>] the identifiers that are not yet resolved.
+    # @see Identifier#resolved?
+    def unresolved_identifiers
+      @identifiers.select{|identifier| !identifier.resolved? }
     end
 
     # @return [true,false] true if all identifiers have been resolved.

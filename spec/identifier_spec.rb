@@ -166,12 +166,12 @@ module CombinatorialPuzzleSolver
       end
     end
 
-    describe "#pop_state" do
+    describe "#pop_state!" do
       it "should pop the stack and set value and possible values" do
         stack = []
         identifier.push_state(stack)
         identifier.set!(2)
-        identifier.pop_state(stack)
+        identifier.pop_state!(stack)
 
         expect(identifier.value).to eq(nil)
         expect(identifier.possible_values).to match_array([1,2,3,4,5])

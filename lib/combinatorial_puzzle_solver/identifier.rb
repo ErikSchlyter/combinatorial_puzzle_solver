@@ -114,7 +114,7 @@ module CombinatorialPuzzleSolver
     # Pushes the state of the identifier onto the given stack, which is useful
     # if you want to set new values or derive possibilities while being able to
     # revert.
-    # @see pop_state
+    # @see pop_state!
     # @param stack [Array] the stack to push the state onto.
     def push_state(stack)
       begin
@@ -128,9 +128,16 @@ module CombinatorialPuzzleSolver
     # Pops the state of the identifier from the given stack.
     # @see push_state
     # @param stack [Array] the stack to pop the state from.
-    def pop_state(stack)
+    def pop_state!(stack)
       @possible_values = stack.pop
       @value = stack.pop
+    end
+
+    # Pops a state from the given stack and discards it.
+    # @param stack [Array] the stack to pop the state from.
+    def pop_and_skip_state(stack)
+      stack.pop
+      stack.pop
     end
 
   end
