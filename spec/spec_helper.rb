@@ -8,9 +8,9 @@ module CombinatorialPuzzleSolver
     end
   end
 
-  # A test puzzle that consists of 6 identifiers and 2 constraints. The first
-  # constraint includes identifier [0,1,2,3] and the second contains [2,3,4,5],
-  # which means that identifiers [2,3] overlap.
+  # A test puzzle that consists of 5 identifiers and 2 constraints. The first
+  # constraint includes identifier [0,1,2] and the second contains [2,3,4],
+  # which means that identifier [2] overlap both constraints.
   class TwoConstraintPuzzle < Puzzle
     def initialize
       super(5, [1,2,3]){|identifiers|

@@ -8,11 +8,11 @@ module CombinatorialPuzzleSolver
     # @ return [String, nil] An optional label for diagnostic output
     attr_reader :label
 
-    # @ return [Array<Identifier>] The identifiers that this constraint coverts.
+    # @ return [Array<Identifier>] The identifiers that this constraint covers.
     attr_reader :identifiers
 
     # Creates a constraint that states that the given identifiers can not
-    # contain the same value.
+    # contain the same value. Each of them must be unique.
     # @param identifiers  [Array<Identifiers>] the identifiers
     # @param label        [String] an optional label for diagnostic output
     def initialize(identifiers, label=nil)
@@ -25,9 +25,13 @@ module CombinatorialPuzzleSolver
       @identifiers.each{|identifier| identifier.dependencies << self }
     end
 
-    # Notifies identifiers if a value can only be set to that single identifier
-    # within the constraint.
-    # @return [Hash<Identifier,Object>] The identifiers that was resolved
+    # Iterates all the possible values that can be set within this constraint, and
+    # resolves those values that can only be assign to a single identifier.
+    #
+    # @return [Hash<Identifier,Object>] the identifiers that was resolved
+    # @raise [Inconsistency] if this action makes the puzzle inconsistent.
+    # @see #possible_values
+    # @see Identifier#must_be!
     def resolve!
       solutions = {}
 
@@ -50,9 +54,8 @@ module CombinatorialPuzzleSolver
     # All possible values that can be set within this constraint, each mapped to
     # the set of identifiers that can have that value without violating any
     # constraints.
-    # @return [Map<Object,Set<Identifier>>] A map between each possible value
-    #                                       and the set of identifiers that can
-    #                                       have it.
+    # @return [Hash<Object,Set<Identifier>>] a map between each possible value and
+    #                                        the set of identifiers that can have it.
     def possible_values
       values = Hash.new{|value,ids| value[ids] = Set.new }
 

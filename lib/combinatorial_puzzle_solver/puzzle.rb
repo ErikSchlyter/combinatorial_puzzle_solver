@@ -11,7 +11,7 @@ module CombinatorialPuzzleSolver
     # @return [Array<Constraint>]
     attr_reader :constraints
 
-    # @return [Array] An array that contains all the possible values each
+    # @return [Array] an array that contains all the possible values each
     #                 identifier can have.
     attr_reader :values
 
@@ -56,6 +56,7 @@ module CombinatorialPuzzleSolver
 
     # Tries to resolve all constraints until none of them yield new solutions.
     # @return [Hash<Identifier,Object>] A Hash mapping all resolved identifiers.
+    # @raise [Inconsistency] if this action makes the puzzle inconsistent.
     def resolve_constraints!
       solutions = {}
       loop do
@@ -73,7 +74,7 @@ module CombinatorialPuzzleSolver
       solutions
     end
 
-    # @return [true,false] True if all identifiers have been resolved.
+    # @return [true,false] true if all identifiers have been resolved.
     def resolved?
       @identifiers.all?{|identifier| identifier.resolved? }
     end
