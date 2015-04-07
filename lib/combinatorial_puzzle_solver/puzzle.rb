@@ -79,9 +79,11 @@ module CombinatorialPuzzleSolver
       @identifiers.all?{|identifier| identifier.resolved? }
     end
 
-    # @return [String] A string listing all identifiers and their possible values.
+    # @return [String] identifiers and constraints as a string representation.
+    # @see Identifier#inspect
+    # @see Constraint#inspect
     def inspect
-      @identifiers.collect{|id| "#{id.to_s} #{id.possible_values}" }.join("\n")
+      (@identifiers + @constraints).collect{|obj| obj.inspect }.join("\n")
     end
   end
 end

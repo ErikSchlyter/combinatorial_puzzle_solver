@@ -63,5 +63,10 @@ module CombinatorialPuzzleSolver
       values
     end
 
+    # @return [String] the covered identifiers as a string.
+    def inspect
+      "{ #{@identifiers.collect{|id| id.to_s}.join(', ')} }"
+    end
+
   end
 end

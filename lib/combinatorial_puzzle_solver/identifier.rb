@@ -29,8 +29,8 @@ module CombinatorialPuzzleSolver
 
     # Sets the value for this identifier
     # @param value [Object] the value to set.
-    # @raise [RuntimeError] If this identifier already has a value set.
-    # @raise [Inconsistency] If this action makes the puzzle inconsistent.
+    # @raise [RuntimeError] if this identifier already has a value set.
+    # @raise [Inconsistency] if this action makes the puzzle inconsistent.
     def set!(value)
       fail "Value for #{to_s} already set" unless @value.nil?
       @value = value
@@ -45,7 +45,7 @@ module CombinatorialPuzzleSolver
     #                                     if not given.
     # @return [Array<Identifier>] the array of the identifiers that became resolvable
     #                             because of this action.
-    # @raise [Inconsistency] If this action makes the puzzle inconsistent.
+    # @raise [Inconsistency] if this action makes the puzzle inconsistent.
     # @see #dependent_identifiers
     # @see #cannot_be!
     def dependent_identifiers_cannot_be!(value, resolved=[])
@@ -104,6 +104,11 @@ module CombinatorialPuzzleSolver
     # @return [String] a string representation of this identifier, '[index:value]'.
     def to_s
       "[#{@puzzle.identifiers.index(self)}:#{value}]"
+    end
+
+    # @return [String] the identifier and its possible values as a string.
+    def inspect
+      "#{to_s} - #{@possible_values.inspect}"
     end
 
     # Pushes the state of the identifier onto the given stack, which is useful
