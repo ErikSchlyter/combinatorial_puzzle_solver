@@ -14,14 +14,6 @@ module CombinatorialPuzzleSolver
       end
     end
 
-    describe "#label" do
-      it "returns a diagnostic string that represents this constraint." do
-        constraint = Constraint.new(puzzle.identifiers, "some debug label")
-
-        expect(constraint.label).to match("some debug label")
-      end
-    end
-
     describe "#resolve!" do
       before {
         puzzle.identifiers[1].cannot_be!(1)

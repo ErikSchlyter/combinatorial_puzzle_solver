@@ -5,19 +5,14 @@ module CombinatorialPuzzleSolver
   # column in a Sudoku puzzle.
   class Constraint
 
-    # @ return [String, nil] An optional label for diagnostic output
-    attr_reader :label
-
     # @ return [Array<Identifier>] The identifiers that this constraint covers.
     attr_reader :identifiers
 
     # Creates a constraint that states that the given identifiers can not
     # contain the same value. Each of them must be unique.
     # @param identifiers  [Array<Identifiers>] the identifiers
-    # @param label        [String] an optional label for diagnostic output
-    def initialize(identifiers, label=nil)
+    def initialize(identifiers)
       @identifiers = Array.new(identifiers)
-      @label = label
 
       fail unless @identifiers.is_a?(Array)
       fail unless @identifiers.all?{|id| id.is_a?(Identifier) }
