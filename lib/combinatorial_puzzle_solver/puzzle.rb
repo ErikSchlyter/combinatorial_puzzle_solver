@@ -129,20 +129,21 @@ module CombinatorialPuzzleSolver
     # @yieldparam identifier [Identifier] any identifier that was tried and failed.
     # @yieldparam value [Object] any value that was tried and failed.
     # @see #resolve!
-    def resolve_with!(identifier, value)
+    def resolve_with!(identifier, value, &fail_block)
+      push_state
       begin
-        push_state
-        identifier.must_be!(value)
+        identifier.must_be!(value) # might throw Inconsistency
 
-        if resolve! then
+        if resolve!(&fail_block) then
           pop_and_skip_state!
           return true
         end
 
       rescue Inconsistency
-        yield identifier, value if block_given?
-        pop_state!
       end
+
+      yield identifier, value if block_given?
+      pop_state!
 
       false
     end
