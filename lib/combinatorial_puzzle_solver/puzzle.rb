@@ -116,6 +116,9 @@ module CombinatorialPuzzleSolver
             end
           end
         }
+
+        solutions.merge!(new_solutions)
+
       rescue Inconsistency
       end
 

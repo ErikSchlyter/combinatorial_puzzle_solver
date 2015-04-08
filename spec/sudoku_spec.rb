@@ -75,10 +75,14 @@ module CombinatorialPuzzleSolver
       sudoku = Sudoku.scan(puzzle_string)
       illustrate sudoku.to_s, :label=>"Given the puzzle:"
 
-      solutions = sudoku.resolve!
-      expect(sudoku.resolved?).to be true
+      sudoku.resolve!
 
-      solutions.each{|identifier, value| identifier.set!(value) }
+      sudoku.identifiers.each{|identifier|
+        expect(identifier.resolved? || identifier.has_value?).to be true
+        identifier.set!(identifier.possible_values.first) unless identifier.has_value?
+      }
+
+      expect(sudoku.resolved?).to be true
       illustrate sudoku.to_s, :label=>"When resolved:"
     end
 
