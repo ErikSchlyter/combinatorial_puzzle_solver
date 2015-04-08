@@ -64,10 +64,13 @@ module CombinatorialPuzzleSolver
     end
 
     # Tries to resolve all constraints until none of them yield new solutions.
-    # @return [Hash<Identifier,Object>] A Hash mapping all resolved identifiers.
+    # @param solutions [Hash<Identifier,Object>] an optional hash to store the
+    #                                            identifiers that becomes resolved.
+    #                                            It will be created if not given.
+    # @return [Hash<Identifier,Object>] the hash of identifiers that becomes
+    #                                   resolvable because of this action.
     # @raise [Inconsistency] if this action makes the puzzle inconsistent.
-    def resolve_constraints!
-      solutions = {}
+    def resolve_constraints!(solutions = {})
       loop do
         found_any = false
 
@@ -89,54 +92,63 @@ module CombinatorialPuzzleSolver
     #
     # Any trial and error attempt that fails during a call to {#resolve_with!} will
     # be yielded with identifier and value.
-    # @return [true,false] true if the puzzle is solved, false if it is inconsistent.
+    # @param solutions [Hash<Identifier,Object>] an optional hash to store the
+    #                                            identifiers that becomes resolved.
+    #                                            It will be created if not given.
+    # @return [Hash<Identifier,Object>] the hash of identifiers that becomes
+    #                                   resolved because of this action.
     # @yieldparam identifier [Identifier] any identifier that was tried and failed.
     # @yieldparam value [Object] any value that was tried and failed.
     # @see #resolve_with!
-    def resolve!(&fail_block)
+    def resolve!(solutions={}, &fail_block)
       begin
-        resolve_constraints!
+        new_solutions = resolve_constraints!
 
         unresolved_identifiers.each{|identifier|
           while !identifier.resolved? do
             maybe_value = identifier.possible_values.first
 
-            if resolve_with!(identifier, maybe_value, &fail_block) then
-              return true
+            if resolve_with!(identifier, maybe_value, new_solutions, &fail_block) then
+              return solutions.merge!(new_solutions)
             else
-              identifier.cannot_be!(maybe_value)
-              resolve_constraints!
+              identifier.cannot_be!(maybe_value, new_solutions)
+              resolve_constraints!(new_solutions)
             end
           end
         }
       rescue Inconsistency
-        return false
       end
 
-      resolved?
+      solutions
     end
 
     # Tries to solve the puzzle recursively by invoking #resolve! with the assumption
     # that the given value is the only value the identifier can have.
     #
     # If the puzzle becomes unsolvable it returns false and the state is reverted.
-    # If a solution is found it returns true, and the puzzle is left in the state of
-    # the accepted solution.
+    # If a solution is found it returns the resolved identifiers, and the puzzle is
+    # left in the state of the accepted solution.
     #
     # Any attempt that fails will be yielded with identifier and value.
     # @param identifier [Identifier] the identifier to try.
     # @param value [Object] the value to try.
+    # @param solutions [Hash<Identifier,Object>] an optional hash to store the
+    #                                            identifiers that becomes resolved.
+    #                                            It will be created if not given.
+    # @return [Hash<Identifier,Object>, false] the resolved identifiers, or false if
+    #                                          the puzzle becomes unsolvable.
     # @yieldparam identifier [Identifier] any identifier that was tried and failed.
     # @yieldparam value [Object] any value that was tried and failed.
     # @see #resolve!
-    def resolve_with!(identifier, value, &fail_block)
+    def resolve_with!(identifier, value, solutions={}, &fail_block)
       push_state
       begin
-        identifier.must_be!(value) # might throw Inconsistency
+        new_solutions = identifier.must_be!(value) # might throw Inconsistency
+        resolve!(new_solutions, &fail_block)
 
-        if resolve!(&fail_block) then
+        if resolved? then
           pop_and_skip_state!
-          return true
+          return solutions.merge!(new_solutions)
         end
 
       rescue Inconsistency
@@ -151,12 +163,12 @@ module CombinatorialPuzzleSolver
     # @return [Array<Identifier>] the identifiers that are not yet resolved.
     # @see Identifier#resolved?
     def unresolved_identifiers
-      @identifiers.select{|identifier| !identifier.resolved? }
+      @identifiers.select{|identifier| identifier.unresolved? }
     end
 
-    # @return [true,false] true if all identifiers have been resolved.
+    # @return [true,false] true if all identifiers have values or have been resolved.
     def resolved?
-      @identifiers.all?{|identifier| identifier.resolved? }
+      @identifiers.all?{|identifier| identifier.has_value? || identifier.resolved? }
     end
 
     # @return [String] identifiers and constraints as a string representation.

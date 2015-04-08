@@ -1,4 +1,3 @@
-require 'rspec/illustrate'
 require 'combinatorial_puzzle_solver'
 require 'spec_helper'
 
@@ -85,6 +84,11 @@ module CombinatorialPuzzleSolver
           expect(bad_attempt).to be false
         end
 
+        it "should not be resolved" do
+          bad_attempt
+          expect(puzzle.resolved?).to be false
+        end
+
         it "should keep the current stack size" do
           size_before = puzzle.instance_variable_get(:@state_stack).size
 
@@ -106,8 +110,8 @@ module CombinatorialPuzzleSolver
       context "when the puzzle is solvable" do
         let!(:good_attempt) { puzzle.resolve_with!(puzzle.identifiers.last, 1) }
 
-        it "should return true" do
-          expect(good_attempt).to be true
+        it "should return a Hash" do
+          expect(good_attempt).to be_a(Hash)
         end
 
         it "it should solve the puzzle" do
@@ -125,8 +129,13 @@ module CombinatorialPuzzleSolver
           expect(puzzle.resolved?).to be true
         end
 
-        it "should return true" do
-          expect(puzzle.resolve!).to be true
+        it "should return a Hash of resolved identifiers" do
+          solutions = puzzle.resolve!
+          expect(solutions).to be_a(Hash)
+          expect(solutions.keys).to match_array(puzzle.identifiers)
+          solutions.each{|identifier, value|
+            expect(identifier.possible_values).to match_array([value])
+          }
         end
       end
 
@@ -140,8 +149,16 @@ module CombinatorialPuzzleSolver
             # it's hard to setup a failed puzzle without triggering Inconsistency
           end
         }
-        it "should return false" do
-          expect(puzzle.resolve!).to be false
+
+        it "should return a Hash of resolved identifiers" do
+          solutions = puzzle.resolve!
+          expect(solutions).to be_a(Hash)
+          expect(solutions).to be_empty
+        end
+
+        it "should not solve the puzzle" do
+          puzzle.resolve!
+          expect(puzzle.resolved?).to be false
         end
       end
     end

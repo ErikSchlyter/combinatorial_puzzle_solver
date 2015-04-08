@@ -56,10 +56,10 @@ module CombinatorialPuzzleSolver
         }
       end
 
-      it "should return an array of the identifiers that becomes resolvable" do
+      it "should return a Hash with the identifiers that becomes resolvable" do
         expect(puzzle.identifiers[1].set!(2)).to be_empty
         expect(puzzle.identifiers[2].set!(3)).to be_empty
-        expect(puzzle.identifiers[3].set!(4)).to match_array([puzzle.identifiers[4]])
+        expect(puzzle.identifiers[3].set!(4)).to match({puzzle.identifiers[4] => 5})
       end
     end
 
@@ -91,11 +91,11 @@ module CombinatorialPuzzleSolver
         expect(identifier.possible_values).to match_array([1, 2, 4, 5])
       end
 
-      it "should an array of the identifiers that becomes resolvable" do
+      it "should return hash of the identifiers that becomes resolvable" do
         expect(identifier.cannot_be!(1)).to be_empty
         expect(identifier.cannot_be!(2)).to be_empty
         expect(identifier.cannot_be!(3)).to be_empty
-        expect(identifier.cannot_be!(4)).to match_array([identifier])
+        expect(identifier.cannot_be!(4)).to match({identifier => 5})
         expect(identifier.cannot_be!(4)).to be_empty # already resolvable
       end
 
@@ -126,12 +126,13 @@ module CombinatorialPuzzleSolver
         }
       end
 
-      it "should return an array of identifiers that becomes resolvable" do
+      it "should return a Hash of the identifiers that becomes resolvable" do
         identifiers = puzzle.identifiers
-        expect(identifiers[4].must_be!(5)).to match_array([identifiers[4]])
-        expect(identifiers[3].must_be!(4)).to match_array([identifiers[3]])
-        expect(identifiers[2].must_be!(3)).to match_array([identifiers[2]])
-        expect(identifiers[1].must_be!(2)).to match_array(identifiers[0..1])
+        expect(identifiers[4].must_be!(5)).to match({identifiers[4] => 5})
+        expect(identifiers[3].must_be!(4)).to match({identifiers[3] => 4})
+        expect(identifiers[2].must_be!(3)).to match({identifiers[2] => 3})
+        expect(identifiers[1].must_be!(2)).to match({identifiers[1] => 2,
+                                                     identifiers[0] => 1})
       end
     end
 
@@ -143,10 +144,21 @@ module CombinatorialPuzzleSolver
         identifier.cannot_be!(2)
         expect(identifier.resolved?).to be true
       end
+    end
 
-      it "should return true if identifier has a value" do
+    describe "#unresolved?" do
+      it "should return true if identifier has more than one possible value" do
+        expect(identifier.unresolved?).to be true
+        identifier.cannot_be!(5)
+        identifier.cannot_be!(4)
+        identifier.cannot_be!(3)
+        identifier.cannot_be!(2)
+        expect(identifier.unresolved?).to be false
+      end
+
+      it "should return false if identifier has a value" do
         identifier.set!(1)
-        expect(identifier.resolved?).to be true
+        expect(identifier.resolved?).to be false
       end
     end
 

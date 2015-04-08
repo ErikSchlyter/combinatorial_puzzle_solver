@@ -66,7 +66,7 @@ module CombinatorialPuzzleSolver
 
         illustrate sudoku.to_s, :label=>"The resulting puzzle:"
         expect(sudoku).to be_a(Sudoku)
-        expect(sudoku.identifiers.count{|id| !id.value.nil?}).to eq(25)
+        expect(sudoku.identifiers.count{|id| id.has_value?}).to eq(25)
       end
     end
 
@@ -75,15 +75,11 @@ module CombinatorialPuzzleSolver
       sudoku = Sudoku.scan(puzzle_string)
       illustrate sudoku.to_s, :label=>"Given the puzzle:"
 
-      sudoku.resolve!
-
-      unset = sudoku.identifiers.select{|identifier| identifier.value.nil? }
-      expect(unset.collect{|identifier| identifier.resolved?}).to all(be true)
-
-      unset.each{|identifier| identifier.set!(identifier.possible_values.first) }
-
-      illustrate sudoku.to_s, :label=>"When resolved:"
+      solutions = sudoku.resolve!
       expect(sudoku.resolved?).to be true
+
+      solutions.each{|identifier, value| identifier.set!(value) }
+      illustrate sudoku.to_s, :label=>"When resolved:"
     end
 
 

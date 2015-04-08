@@ -23,7 +23,8 @@ module CombinatorialPuzzleSolver
     # Iterates all the possible values that can be set within this constraint, and
     # resolves those values that can only be assign to a single identifier.
     #
-    # @return [Hash<Identifier,Object>] the identifiers that was resolved
+    # @return [Hash<Identifier,Object>] the hash of identifiers that becomes
+    #                                   resolvable because of this action.
     # @raise [Inconsistency] if this action makes the puzzle inconsistent.
     # @see #possible_values
     # @see Identifier#must_be!
@@ -34,11 +35,7 @@ module CombinatorialPuzzleSolver
         if identifiers.size == 1 then # this identifier is resolvable
           resolvable_identifier = identifiers.first
           unless resolvable_identifier.resolved? then
-
-            solutions[resolvable_identifier] = value
-            resolvable_identifier.must_be!(value).each{|identifier|
-              solutions[identifier] = identifier.possible_values.first
-            }
+            resolvable_identifier.must_be!(value, solutions)
           end
         end
       }

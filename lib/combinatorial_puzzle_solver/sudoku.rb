@@ -60,7 +60,7 @@ module CombinatorialPuzzleSolver
 
     # @return [String] a simple string representation of the sudoku puzzle.
     def to_s
-      identifiers = @identifiers.collect{|id| (id.value.nil?)? " " : id.value.to_s}
+      identifiers = @identifiers.collect{|id| (id.has_value?) ? id.value.to_s : " "}
       identifiers.each_slice(@size).collect{|row| row.join }.join("\n")
     end
   end
