@@ -60,8 +60,14 @@ module CombinatorialPuzzleSolver
 
     # @return [String] a simple string representation of the sudoku puzzle.
     def to_s
-      identifiers = @identifiers.collect{|id| (id.has_value?) ? id.value.to_s : " "}
-      identifiers.each_slice(@size).collect{|row| row.join }.join("\n")
+      horizontal = "\n#{Array.new(@dimension){"-" * (@dimension*2-1) }.join("+")}\n"
+      divisors = [horizontal, "\n", "|", " "]
+
+      strings = @identifiers.collect{|id| (id.has_value?) ? id.value.to_s : " "}
+      while divisor = divisors.pop do
+        strings = strings.each_slice(@dimension).collect{|s| s.join(divisor) }
+      end
+      strings.join
     end
   end
 
