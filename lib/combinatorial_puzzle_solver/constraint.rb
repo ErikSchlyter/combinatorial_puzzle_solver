@@ -1,69 +1,54 @@
 
 module CombinatorialPuzzleSolver
 
-  # A set of identifiers that all should have unique values, like a row or
+  # A collection of identifiers that all should have unique values, like a row or a
   # column in a Sudoku puzzle.
-  class Constraint
+  class Constraint < Array
 
-    # @ return [Array<Identifier>] The identifiers that this constraint covers.
-    attr_reader :identifiers
-
-    # Creates a constraint that states that the given identifiers can not
-    # contain the same value. Each of them must be unique.
-    # @param identifiers  [Array<Identifiers>] the identifiers
     def initialize(identifiers)
-      @identifiers = Array.new(identifiers)
+      super(identifiers)
+      fail unless identifiers.is_a?(Array)
+      identifiers.each{|id| fail unless id.is_a?(Identifier)}
 
-      fail unless @identifiers.is_a?(Array)
-      fail unless @identifiers.all?{|id| id.is_a?(Identifier) }
-
-      @identifiers.each{|identifier| identifier.dependencies << self }
+      each{|identifier| identifier.constraints << self }
     end
 
-    # Iterates all the possible values that can be set within this constraint, and
-    # resolves those values that can only be assign to a single identifier.
+    # Iterates all possible values that can be set within this constraint, and
+    # when a value can only be placed within that specific identifier.
     #
-    # @return [Hash<Identifier,Object>] the hash of identifiers that becomes
-    #                                   resolvable because of this action.
-    # @raise [Inconsistency] if this action makes the puzzle inconsistent.
-    # @see #possible_values
-    # @see Identifier#must_be!
-    def resolve!
-      solutions = {}
-
-      possible_values.each{|value, identifiers|
-        if identifiers.size == 1 then # this identifier is resolvable
-          resolvable_identifier = identifiers.first
-          unless resolvable_identifier.resolved? then
-            resolvable_identifier.must_be!(value, solutions)
+    # @param solution_space [SolutionSpace] the mapping between the puzzle's
+    #                                       identifiers and the values they can have.
+    # @param resolvable [Hash<Identifier,Object>] an optional Hash to store all
+    #                                             identifiers and values that becomes
+    #                                             resolvable.
+    # @return [Hash<Identifier,Object>] the identifiers that can be resolved, mapped
+    #                                   to the only value they can have.
+    def resolvable_identifiers(solution_space, resolvable=Hash.new)
+      possible_values(solution_space).each{|value, identifiers|
+        if identifiers.size == 1 then
+          resolved_identifier = identifiers.first
+          unless solution_space[resolved_identifier].resolved? then
+            resolvable[resolved_identifier] = value
           end
         end
       }
-
-      solutions
+      resolvable
     end
 
-    # All possible values that can be set within this constraint, each mapped to
-    # the set of identifiers that can have that value without violating any
-    # constraints.
-    # @return [Hash<Object,Set<Identifier>>] a map between each possible value and
-    #                                        the set of identifiers that can have it.
-    def possible_values
+    # @param solution_space [SolutionSpace] the mapping between the puzzle's
+    #                                       identifiers and the values they can have.
+    # @return [Hash<Object,Set<Identifier>>] a map between each possible value within
+    #                                        this constraint and the set of
+    #                                        identifiers that can have them.
+    def possible_values(solution_space)
       values = Hash.new{|value,ids| value[ids] = Set.new }
 
-      @identifiers.each{|identifier|
-        identifier.possible_values.each{|value|
+      each{|identifier|
+        solution_space[identifier].each{|value|
           values[value] << identifier
         }
       }
-
       values
     end
-
-    # @return [String] the covered identifiers as a string.
-    def inspect
-      "{ #{@identifiers.collect{|id| id.to_s}.join(', ')} }"
-    end
-
   end
 end

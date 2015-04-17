@@ -4,7 +4,7 @@ module CombinatorialPuzzleSolver
 
   class SingleRowPuzzle < Puzzle
     def initialize(values)
-      super(values.size, values) {|identifiers| Constraint.new(identifiers) }
+      super(values.size, values) {|identifiers| [ Constraint.new(identifiers) ] }
     end
   end
 

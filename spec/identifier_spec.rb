@@ -18,17 +18,23 @@ module CombinatorialPuzzleSolver
       end
     end
 
-    describe "#dependencies" do
-      it "should return an Array of all dependent constraints" do
-        puzzle.identifiers.each{|identifier|
-          expect(identifier.dependencies).to match_array([constraint])
-        }
+    describe "#has_value?" do
+      it "should return true if it has a value, false otherwise" do
+        expect(identifier.has_value?).to be false
+
+        identifier.set!(1)
+        expect(identifier.has_value?).to be true
+
+        identifier.set!(nil)
+        expect(identifier.has_value?).to be false
       end
     end
 
-    describe "#possible_values" do
-      it "should match all the possible values of the puzzle" do
-        expect(identifier.possible_values).to match_array(values)
+    describe "#constraints" do
+      it "should return an Array of all dependent constraints" do
+        puzzle.identifiers.each{|identifier|
+          expect(identifier.constraints).to match_array([constraint])
+        }
       end
     end
 
@@ -40,26 +46,6 @@ module CombinatorialPuzzleSolver
 
       it "should set the given value" do
         expect(identifier.value).to eq(1)
-      end
-
-      it "should fail if a value is already set" do
-        expect{ identifier.set!(1) }.to raise_error
-      end
-
-      it "should clear all possible values" do
-        expect(identifier.possible_values).to be_empty
-      end
-
-      it "should notify all dependent identifiers that they can't set same value" do
-        (puzzle.identifiers - [identifier]).each{|other_identifier|
-          expect(other_identifier.possible_values).to match_array([2, 3, 4, 5])
-        }
-      end
-
-      it "should return a Hash with the identifiers that becomes resolvable" do
-        expect(puzzle.identifiers[1].set!(2)).to be_empty
-        expect(puzzle.identifiers[2].set!(3)).to be_empty
-        expect(puzzle.identifiers[3].set!(4)).to match({puzzle.identifiers[4] => 5})
       end
     end
 
@@ -82,111 +68,6 @@ module CombinatorialPuzzleSolver
         dependencies.each{|id, deps|
           expect(id.dependent_identifiers).to match_array(deps)
         }
-      end
-    end
-
-    describe "#cannot_be!" do
-      it "should remove the value from its set of possible values" do
-        identifier.cannot_be!(3)
-        expect(identifier.possible_values).to match_array([1, 2, 4, 5])
-      end
-
-      it "should return hash of the identifiers that becomes resolvable" do
-        expect(identifier.cannot_be!(1)).to be_empty
-        expect(identifier.cannot_be!(2)).to be_empty
-        expect(identifier.cannot_be!(3)).to be_empty
-        expect(identifier.cannot_be!(4)).to match({identifier => 5})
-        expect(identifier.cannot_be!(4)).to be_empty # already resolvable
-      end
-
-      it "should raise inconsistency error if it already has the given value" do
-        identifier.set!(1)
-        expect{ identifier.cannot_be!(1) }.to raise_error(Inconsistency)
-      end
-
-      it "should raise inconsistency error if there's no possible solutions" do
-        identifier.cannot_be!(1)
-        identifier.cannot_be!(2)
-        identifier.cannot_be!(3)
-        identifier.cannot_be!(4)
-        expect{ identifier.cannot_be!(5) }.to raise_error(Inconsistency)
-      end
-    end
-
-    describe "#must_be" do
-      it "should remove all values except given from set of possible values" do
-        identifier.must_be!(3)
-        expect(identifier.possible_values).to match_array([3])
-      end
-
-      it "should remove that value from dependent identifiers' possibilities" do
-        identifier.must_be!(3)
-        (1..4).each{|i|
-          expect(puzzle.identifiers[i].possible_values).to match_array([1,2,4,5])
-        }
-      end
-
-      it "should return a Hash of the identifiers that becomes resolvable" do
-        identifiers = puzzle.identifiers
-        expect(identifiers[4].must_be!(5)).to match({identifiers[4] => 5})
-        expect(identifiers[3].must_be!(4)).to match({identifiers[3] => 4})
-        expect(identifiers[2].must_be!(3)).to match({identifiers[2] => 3})
-        expect(identifiers[1].must_be!(2)).to match({identifiers[1] => 2,
-                                                     identifiers[0] => 1})
-      end
-    end
-
-    describe "#resolved?" do
-      it "should return true if identifier has a unique possible value." do
-        identifier.cannot_be!(5)
-        identifier.cannot_be!(4)
-        identifier.cannot_be!(3)
-        identifier.cannot_be!(2)
-        expect(identifier.resolved?).to be true
-      end
-    end
-
-    describe "#unresolved?" do
-      it "should return true if identifier has more than one possible value" do
-        expect(identifier.unresolved?).to be true
-        identifier.cannot_be!(5)
-        identifier.cannot_be!(4)
-        identifier.cannot_be!(3)
-        identifier.cannot_be!(2)
-        expect(identifier.unresolved?).to be false
-      end
-
-      it "should return false if identifier has a value" do
-        identifier.set!(1)
-        expect(identifier.resolved?).to be false
-      end
-    end
-
-    describe "#push_state" do
-      it "should push value and possible values to a given stack" do
-        stack = []
-
-        identifier.push_state(stack)
-        expect(stack[0]).to eq(nil)
-        expect(stack[1]).to match_array([1,2,3,4,5])
-
-        identifier.set!(2)
-
-        identifier.push_state(stack)
-        expect(stack[2]).to eq(2)
-        expect(stack[3]).to match_array([])
-      end
-    end
-
-    describe "#pop_state!" do
-      it "should pop the stack and set value and possible values" do
-        stack = []
-        identifier.push_state(stack)
-        identifier.set!(2)
-        identifier.pop_state!(stack)
-
-        expect(identifier.value).to eq(nil)
-        expect(identifier.possible_values).to match_array([1,2,3,4,5])
       end
     end
   end

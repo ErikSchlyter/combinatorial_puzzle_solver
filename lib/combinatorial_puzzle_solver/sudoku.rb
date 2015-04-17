@@ -23,7 +23,14 @@ module CombinatorialPuzzleSolver
     def self.scan(string, dimension=3)
       sudoku = Sudoku.new(dimension)
 
-      string.scan(/\d/).collect{|value| value.to_i}.each_with_index{|value, index|
+      digits = string.scan(/\d/).collect{|value| value.to_i}
+
+      expected = sudoku.identifiers.size
+      unless digits.size == expected then
+        raise IOError.new("Parsed #{digits.size} digits instead of #{expected}).")
+      end
+
+      digits.each_with_index{|value, index|
         unless value == 0 then
           sudoku.identifiers[index].set!(value)
         end
@@ -68,6 +75,19 @@ module CombinatorialPuzzleSolver
         strings = strings.each_slice(@dimension).collect{|s| s.join(divisor) }
       end
       strings.join
+    end
+
+    # @return [String] a string representation of an identifier, which would be
+    #                  "[row,column]"
+    def identifier_to_s(identifier)
+      index = identifiers.index(identifier)
+      "[#{index / size + 1},#{index % size + 1}]"
+    end
+
+    # @return [String] a string representation of an identifier, which would be
+    #                  "[row,column]=value"
+    def inspect_identifier(identifier)
+      identifier_to_s(identifier) << "=#{identifier.value.to_s}"
     end
   end
 

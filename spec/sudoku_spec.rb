@@ -64,9 +64,23 @@ module CombinatorialPuzzleSolver
         illustrate puzzle_string, :label=>"Given the input string:"
         sudoku = Sudoku.scan(puzzle_string)
 
-        illustrate sudoku.to_s, :label=>"The resulting puzzle:"
+        illustrate sudoku.to_s, :label=>"It creates the puzzle:"
         expect(sudoku).to be_a(Sudoku)
         expect(sudoku.identifiers.count{|id| id.has_value?}).to eq(25)
+      end
+
+      it "should ignore every character except the digits" do
+        stripped = puzzle_string.gsub(/\D/,'')
+        illustrate stripped, :label=>"Given the input string:"
+
+        sudoku = Sudoku.scan(stripped)
+
+        illustrate sudoku.to_s, :label=>"It creates the puzzle:"
+        expect(sudoku).to be_a(Sudoku)
+      end
+
+      it "should raise IOError if it scans the wrong number of digits" do
+        expect{ Sudoku.scan("123 foo bar") }.to raise_error(IOError)
       end
     end
 
@@ -75,17 +89,14 @@ module CombinatorialPuzzleSolver
       sudoku = Sudoku.scan(puzzle_string)
       illustrate sudoku.to_s, :label=>"Given the puzzle:"
 
-      sudoku.resolve!
+      solution = sudoku.resolve
 
-      sudoku.identifiers.each{|identifier|
-        expect(identifier.resolved? || identifier.has_value?).to be true
-        identifier.set!(identifier.possible_values.first) unless identifier.has_value?
-      }
-
-      expect(sudoku.resolved?).to be true
+      # fill in the blanks into the original puzzle
+      solution.resolved_identifiers.each{|identifier, value| identifier.set!(value) }
       illustrate sudoku.to_s, :label=>"When resolved:"
-    end
 
+      expect(solution.resolved?).to be true
+    end
 
   end
 

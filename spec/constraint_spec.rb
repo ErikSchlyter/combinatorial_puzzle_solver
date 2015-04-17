@@ -3,62 +3,45 @@ require 'combinatorial_puzzle_solver'
 
 
 module CombinatorialPuzzleSolver
-
   describe Constraint do
     let!(:puzzle)     { SingleRowPuzzle.new([1,2,3]) }
     let!(:constraint) { puzzle.constraints.first }
+    let!(:solution_space) { SolutionSpace.new(puzzle) }
 
-    describe "#new" do
-      it "should fail unless given a list of Identifiers" do
-        expect{ Constraint.new(["I am error"]) }.to raise_error
-      end
-    end
-
-    describe "#resolve!" do
-      before {
-        puzzle.identifiers[1].cannot_be!(1)
-        puzzle.identifiers[2].cannot_be!(1)
-
-        expect(puzzle.identifiers[0].possible_values).to match_array([1,2,3])
-        expect(puzzle.identifiers[1].possible_values).to match_array([2, 3])
-        expect(puzzle.identifiers[2].possible_values).to match_array([2, 3])
-      }
-
-      it "should update resolvable identifiers' sets of possible values" do
-        constraint.resolve!
-
-        expect(puzzle.identifiers[0].possible_values).to match_array([1])
-        expect(puzzle.identifiers[1].possible_values).to match_array([2, 3])
-        expect(puzzle.identifiers[2].possible_values).to match_array([2, 3])
-      end
-
-      it "should return Hash with the solutions it found" do
-        expect(constraint.resolve!).to match({ puzzle.identifiers[0] => 1 })
-      end
+    it "is an array" do
+      expect(constraint).to be_a(Constraint)
+      expect(constraint).to be_a(Array)
     end
 
     describe "#possible_values" do
-
-      context "when the constraint's identifiers doesn't contain any value" do
-        it "should map between all values and sets of all of identifiers" do
-          expect(constraint.possible_values).to match(
-            { 1 => puzzle.identifiers,
-              2 => puzzle.identifiers,
-              3 => puzzle.identifiers }
-          )
-        end
+      it "should return a Hash" do
+        expect(constraint.possible_values(solution_space)).to be_a(Hash)
       end
 
-      context "when one of the identifier has a value" do
-        it "should return a Hash between all possible values and their identifiers" do
-          puzzle.identifiers[0].set!(3)
-          expect(constraint.possible_values).to match(
-            { 1 => puzzle.identifiers[1..2],
-              2 => puzzle.identifiers[1..2] }
-          )
-        end
+      it "should contain each value, and the identifiers that can have them." do
+        puzzle.identifiers[0].set!(1)
+        solution_space = SolutionSpace.new(puzzle)
+
+        possible_values = constraint.possible_values(solution_space)
+
+        expect(possible_values).to match({2 => puzzle.identifiers[1..2],
+                                          3 => puzzle.identifiers[1..2] })
+      end
+    end
+
+    describe "#resolvable_identifiers" do
+      it "should return a Hash" do
+        expect(constraint.resolvable_identifiers(solution_space)).to be_a(Hash)
       end
 
+      it "should return the identifiers mapped to their resolved value" do
+        solution_space[puzzle.identifiers[0]].cannot_be!(1)
+        solution_space[puzzle.identifiers[1]].cannot_be!(1)
+
+        resolved = constraint.resolvable_identifiers(solution_space)
+
+        expect(resolved).to match({puzzle.identifiers[2] => 1})
+      end
     end
   end
 end
