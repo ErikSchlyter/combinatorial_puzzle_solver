@@ -35,9 +35,6 @@ file 'doc/examples.md' => FileList["example_puzzles/*"] do
 end
 
 
-desc "Make sure documentation is up to speed and no tests fail."
-task :sanity_check => [:spec, :list_undoc]
-
 task :test => [:spec, :examples]
-task :default => :spec
+task :default => :doc
 
