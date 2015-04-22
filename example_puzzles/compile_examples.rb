@@ -6,9 +6,10 @@ require 'open3'
 # it into a markdown doucument.
 #
 # @param yaml_files [Array<String>] the yaml files to parse
+# @param level [Fixnum] the initial subsection level
 # @return [String] the compiled markdown document.
-def compile_examples_to_markdown(yaml_files)
-  compile(yaml_files.collect{|yaml_file| YAML.load_file(yaml_file)})
+def compile_examples_to_markdown(yaml_files, level)
+  compile(yaml_files.collect{|yaml_file| YAML.load_file(yaml_file)}, level)
 end
 
 # Compiles a given node of the YAML tree into markdown.

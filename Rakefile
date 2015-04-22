@@ -29,7 +29,7 @@ end
 require_relative 'example_puzzles/compile_examples'
 task :examples => ['doc/examples.md']
 file 'doc/examples.md' => FileList["example_puzzles/*"] do
-  markdown = compile_examples_to_markdown(Dir.glob('example_puzzles/*.yaml'))
+  markdown = compile_examples_to_markdown(Dir.glob('example_puzzles/*.yaml'),2)
   File.write('doc/examples.md', markdown)
   $stderr.puts "examples ok!"
 end

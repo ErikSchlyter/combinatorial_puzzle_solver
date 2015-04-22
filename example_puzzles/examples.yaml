@@ -1,13 +1,13 @@
 ---
 :section: Sudoku Solver
 :content:
-- :comment: >
+- :comment: |
     The program `solve_sudoku` reads sudoku puzzles from files
     (or stdin, if no filenames is given) and solves them by
     constraint resolution. If constraint resolution is not enough
     to solve the puzzle, it will resort to a trial and error
     approach. The exit code will indicate if all parsed puzzles
-    was completely solved or not.
+    were completely solved or not.
 
     Each resolution step and the current state of the puzzle can
     be written to stdout for diagnostic purposes. It is also
@@ -24,7 +24,7 @@
     unless explicitly asked for.
 
 - :example: Printing the parsed puzzles, `-i`.
-  :comment: >
+  :comment: |
     The parser will interpret digits (0-9) as values in the puzzle
     and disregard anything else. The option `-i` will output the
     parsed puzzle before it solves it.
@@ -186,7 +186,7 @@
               2\n---+---\n4 2|1 3\n3 1|2 4\n\n2 3|4 1\n1 4|3 2\n---+---\n4 2|1 3\n3 1|2 4\n\n"
 
 - :example: Use constraint resolution only, `-r`.
-  :comment: >
+  :comment: |
     You can avoid the trial and error functionality. Note though that this might not
     lead to a completely solved puzzle, which would imply a failure return code.
 
@@ -227,7 +227,7 @@
 
 
 - :example: Abort after a given number of steps, `-c NUM`, `--clues NUM`.
-  :comment: >
+  :comment: |
       If you don't want the entire puzzle solved, but just a couple of clues on
       how to get forward, you can abort the resolution with `-c`, and print each
       step with  `-s`.

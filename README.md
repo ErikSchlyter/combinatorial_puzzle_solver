@@ -20,15 +20,33 @@ Or install it yourself as:
 
 ## Usage for `solve_sudoku`
 
-The program `solve_sudoku` reads sudoku puzzles from files (or stdin, if no filenames is given) and solves them by constraint resolution. If constraint resolution is not enough to solve the puzzle, it will resort to a trial and error approach. The exit code will indicate if all parsed puzzles was completely solved or not.
-Each resolution step and the current state of the puzzle can be written to stdout for diagnostic purposes. It is also possible to abort after a given number of steps if a complete resolution is not desired, which would be the case if you only want a couple of clues.
-Note that the step output and abort functionality is not available when the puzzle is solved by trial and error.
-The default behavior is resolve all given puzzles (with trial and error, if neccessary) and indicate by exit status whether all puzzles where completely resolved. No output is given unless explicitly asked for.
+The program `solve_sudoku` reads sudoku puzzles from files
+(or stdin, if no filenames is given) and solves them by
+constraint resolution. If constraint resolution is not enough
+to solve the puzzle, it will resort to a trial and error
+approach. The exit code will indicate if all parsed puzzles
+were completely solved or not.
+
+Each resolution step and the current state of the puzzle can
+be written to stdout for diagnostic purposes. It is also
+possible to abort after a given number of steps if a complete
+resolution is not desired, which would be the case if you only
+want a couple of clues.
+
+Note that the step output and abort functionality is not
+available when the puzzle is solved by trial and error.
+
+The default behavior is resolve all given puzzles (with trial
+and error, if neccessary) and indicate by exit status whether
+all puzzles where completely resolved. No output is given
+unless explicitly asked for.
 
 
 ###Printing the parsed puzzles, `-i`.
 
-The parser will interpret digits (0-9) as values in the puzzle and disregard anything else. The option `-i` will output the parsed puzzle before it solves it.
+The parser will interpret digits (0-9) as values in the puzzle
+and disregard anything else. The option `-i` will output the
+parsed puzzle before it solves it.
 
 Given the file `example_puzzles/simple`:
 
@@ -333,7 +351,9 @@ Invoking `solve_sudoku example_puzzles/4x4 --4x4 -p` will return exit code `0` a
 
 ###Use constraint resolution only, `-r`.
 
-You can avoid the trial and error functionality. Note though that this might not lead to a completely solved puzzle, which would imply a failure return code.
+You can avoid the trial and error functionality. Note though that this might not
+lead to a completely solved puzzle, which would imply a failure return code.
+
 The input and incomplete result is demonstrated below.
 
 Given the file `example_puzzles/medium`:
@@ -427,7 +447,9 @@ Invoking `solve_sudoku example_puzzles/hard -i -o -r` will return exit code `256
 
 ###Abort after a given number of steps, `-c NUM`, `--clues NUM`.
 
-If you don't want the entire puzzle solved, but just a couple of clues on how to get forward, you can abort the resolution with `-c`, and print each step with  `-s`.
+If you don't want the entire puzzle solved, but just a couple of clues on
+how to get forward, you can abort the resolution with `-c`, and print each
+step with  `-s`.
 
 Given the file `example_puzzles/simple`:
 
@@ -448,6 +470,7 @@ Invoking `solve_sudoku example_puzzles/simple -s -c 3` will return exit code `0`
 	[8,3]=8
 	[9,8]=8
 	
+
 
 
 ## Development
