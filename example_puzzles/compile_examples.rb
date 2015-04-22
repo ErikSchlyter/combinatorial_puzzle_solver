@@ -79,7 +79,7 @@ end
 # @return [Hash] the example
 def execute(example)
   argv = example[:input_files] + example[:argv]
-  example[:command] = "./solve_sudoku #{argv.join(' ')}"
+  example[:command] = "solve_sudoku #{argv.join(' ')}"
   full_command = "./exe/#{example[:command]}"
 
   Open3.popen3(full_command) {|stdin, stdout, stderr, wait_thr|

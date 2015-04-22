@@ -43,7 +43,7 @@ Given the file `example_puzzles/simple`:
 	027459306
 	
 
-Invoking `./solve_sudoku example_puzzles/simple -i` will return exit code `0` and output:
+Invoking `solve_sudoku example_puzzles/simple -i` will return exit code `0` and output:
 
 	9   6|8 1 3|5 4  
 	2   1|  4 5|  6 3
@@ -91,7 +91,7 @@ Given the file `example_puzzles/medium`:
 	
 	
 
-Invoking `./solve_sudoku example_puzzles/simple example_puzzles/medium -i` will return exit code `0` and output:
+Invoking `solve_sudoku example_puzzles/simple example_puzzles/medium -i` will return exit code `0` and output:
 
 	9   6|8 1 3|5 4  
 	2   1|  4 5|  6 3
@@ -127,7 +127,7 @@ Given the file `example_puzzles/4x4`:
 	this is a tiny puzzle 0040100000030100
 	
 
-Invoking `./solve_sudoku example_puzzles/4x4 -i -4` will return exit code `0` and output:
+Invoking `solve_sudoku example_puzzles/4x4 -i -4` will return exit code `0` and output:
 
 	   |4  
 	1  |   
@@ -153,7 +153,7 @@ Given the file `example_puzzles/simple`:
 	027459306
 	
 
-Invoking `./solve_sudoku example_puzzles/simple -o` will return exit code `0` and output:
+Invoking `solve_sudoku example_puzzles/simple -o` will return exit code `0` and output:
 
 	9 7 6|8 1 3|5 4 2
 	2 8 1|7 4 5|9 6 3
@@ -185,7 +185,7 @@ Given the file `example_puzzles/simple`:
 	027459306
 	
 
-Invoking `./solve_sudoku example_puzzles/simple -o -s` will return exit code `0` and output:
+Invoking `solve_sudoku example_puzzles/simple -o -s` will return exit code `0` and output:
 
 	[1,2]=7
 	[8,3]=8
@@ -254,7 +254,7 @@ Given the file `example_puzzles/4x4`:
 	this is a tiny puzzle 0040100000030100
 	
 
-Invoking `./solve_sudoku example_puzzles/4x4 --4x4 -p` will return exit code `0` and output:
+Invoking `solve_sudoku example_puzzles/4x4 --4x4 -p` will return exit code `0` and output:
 
 	   |4  
 	1  |  2
@@ -352,7 +352,7 @@ Given the file `example_puzzles/medium`:
 	
 	
 
-Invoking `./solve_sudoku example_puzzles/medium -i -o -r` will return exit code `256` and output:
+Invoking `solve_sudoku example_puzzles/medium -i -o -r` will return exit code `256` and output:
 
 	     |3   1|     
 	    9|     |     
@@ -396,7 +396,7 @@ Given the file `example_puzzles/hard`:
 	470|001|000
 	
 
-Invoking `./solve_sudoku example_puzzles/hard -i -o -r` will return exit code `256` and output:
+Invoking `solve_sudoku example_puzzles/hard -i -o -r` will return exit code `256` and output:
 
 	     |2    |  6 3
 	3    |    5|4   1
@@ -442,7 +442,7 @@ Given the file `example_puzzles/simple`:
 	027459306
 	
 
-Invoking `./solve_sudoku example_puzzles/simple -s -c 3` will return exit code `0` and output:
+Invoking `solve_sudoku example_puzzles/simple -s -c 3` will return exit code `0` and output:
 
 	[1,2]=7
 	[8,3]=8
