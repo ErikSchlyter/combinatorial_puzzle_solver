@@ -12,6 +12,7 @@ Gem::Specification.new do |spec|
   spec.summary       = %q{A resolver of combinatorial number-placement puzzles, like Sudoku.}
   spec.description   = %q{A resolver of combinatorial number-placement puzzles, like Sudoku.}
   spec.homepage      = "https://github.com/ErikSchlyter/combinatorial_puzzle_solver"
+  spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
   spec.bindir        = "exe"
