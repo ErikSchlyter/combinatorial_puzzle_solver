@@ -109,7 +109,7 @@ module CombinatorialPuzzleSolver
       end
 
       it "should yield solution space, identifier and value for every step" do
-        sudoku =  Sudoku.scan("0040,1000,0003,0100", 2)
+        sudoku =  Sudoku.scan("0040,1000,0003,0100", 2).first
         illustrate sudoku.to_s, :label=>"Given the 4x4 sudoku puzzle:"
 
         solution_space = SolutionSpace.new(sudoku)

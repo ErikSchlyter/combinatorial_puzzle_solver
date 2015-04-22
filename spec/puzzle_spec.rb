@@ -39,28 +39,72 @@ module CombinatorialPuzzleSolver
       end
     end
 
-    describe "#resolve" do
+    describe "#resolve!" do
       let!(:puzzle) { puzzle = TwoConstraintPuzzle.new }
 
-      it "should return a SolutionSpace" do
-        expect(puzzle.resolve).to be_a(SolutionSpace)
+      it "should return true when puzzle is solvable" do
+        illustrate puzzle.to_s
+        expect(puzzle.resolve!).to be true
       end
 
-      context "when puzzle is solvable" do
-        it "should return a SolutionSpace that is resolved" do
-          expect(puzzle.resolve.resolved?).to be true
+      it "should raise inconsistency when the puzzle is unsolvable" do
+        puzzle.identifiers[0].set!(1)
+        puzzle.identifiers[1].set!(2)
+        puzzle.identifiers[4].set!(3)
+
+        expect{
+          puzzle.resolve!
+        }.to raise_error(Inconsistency)
+      end
+
+      context "when :parsed_stream is given" do
+        it "should write the parsed input puzzle" do
+          output = {:parsed_stream => StringIO.new}
+          puzzle.resolve!(true, 0, output)
+
+          output[:parsed_stream].rewind
+          expect(output[:parsed_stream].read).to eq(
+            "{  [ }  ]\n\n")
         end
       end
 
-      context "when the puzzle is unsolvable" do
-        before {
+      context "when :steps_stream is given" do
+        it "should write each resolution step" do
           puzzle.identifiers[0].set!(1)
           puzzle.identifiers[1].set!(2)
-          puzzle.identifiers[4].set!(3)
-        }
+          puzzle.identifiers[4].set!(2)
 
-        it "should return nil" do
-          expect(puzzle.resolve).to be_nil
+          output = {:steps_stream => StringIO.new}
+          puzzle.resolve!(true, 0, output)
+
+          output[:steps_stream].rewind
+
+          expect(output[:steps_stream].read).to eq("[2]=3\n[3]=1\n")
+        end
+      end
+
+      context "when :puzzle_stream is given" do
+        it "should write the puzzle for each resolution step" do
+          puzzle.identifiers[0].set!(1)
+          puzzle.identifiers[1].set!(2)
+          puzzle.identifiers[4].set!(2)
+
+          output = {:puzzle_stream => StringIO.new}
+          puzzle.resolve!(true, 0, output)
+
+          output[:puzzle_stream].rewind
+          expect(output[:puzzle_stream].read).to eq("{12[3} 2]\n\n{12[3}12]\n\n")
+        end
+      end
+
+      context "when :result_stream is given" do
+        it "should write the resulting puzzle" do
+          output = {:result_stream => StringIO.new}
+          puzzle.resolve!(true, 0, output)
+
+          output[:result_stream].rewind
+          expect(output[:result_stream].read).to eq(
+            "{12[3}12]\n\n")
         end
       end
     end

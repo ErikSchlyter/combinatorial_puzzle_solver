@@ -1,0 +1,110 @@
+#!/usr/bin/env ruby
+require 'optparse'
+require 'combinatorial_puzzle_solver'
+
+def parse_options(argv)
+  options = { :stderr => $stderr }
+
+  option_parser = OptionParser.new { |opts|
+    opts.banner = "Usage: solve_sudoku [options] [files]"
+
+    options[:dimension] = 3
+
+    opts.on("-4", "--4x4", "Assume puzzles are 4x4 instead of 9x9") {|dimension|
+      options[:dimension] = 2
+    }
+
+    opts.on("-c", "--clues [NUM=1]", Integer,
+            "Abort after NUM steps, don't solve entire puzzle.") {|clues|
+      options[:clues] = clues || 1
+    }
+
+    opts.on("-r", "--resolution-only", "Avoid trial and error",
+            "Might not reach a complete solution.") {|res|
+      options[:resolution] = res
+    }
+
+    opts.separator ""
+    opts.separator "Output:"
+
+    opts.on("-i", "--print-input", "Print the parsed input puzzles."){|input|
+      options[:parsed_stream] = $stdout
+    }
+
+    opts.on("-o", "--print-output", "Print the result puzzles."){|output|
+      options[:result_stream] = $stdout
+    }
+
+    opts.on("-s", "--print-steps", "Print each resolution step.",
+            "It will not print steps resolved by trial and error."){|steps|
+      options[:steps_stream] = $stdout
+    }
+
+    opts.on("-p", "--print-puzzle-steps",
+            "Print entire puzzle for each resolution step.",
+            "It will not print steps resolved by trial and error."){|steps|
+      options[:puzzle_stream] = $stdout
+    }
+
+    opts.separator ""
+    opts.separator "Utility:"
+
+    opts.on_tail("-h", "--help", "Show this message.") {
+      $stderr.puts opts
+      return nil
+    }
+  }
+
+  begin
+    option_parser.parse!(argv)
+  rescue OptionParser::InvalidOption => e
+    $stderr.puts option_parser.help
+    return nil
+  end
+
+  options
+end
+
+# Scans the input string and resolves the sudoku puzzles it manages to parse.
+#
+# @param input [String] the string to be parsed
+# @param options [Hash] the options parsed from ARGV, along with output streams for diagnostic purposes.
+# @return [true,false] whether all the puzzles was completely resolved or not.
+def scan_and_resolve!(input, options)
+  success = true
+  begin
+    CombinatorialPuzzleSolver::Sudoku.scan(input, options[:dimension]){|sudoku|
+      begin
+        success &= sudoku.resolve!(!options[:resolution], options[:clues], options)
+
+      rescue CombinatorialPuzzleSolver::Inconsistency => error
+        options[:stderr].puts "Puzzle inconsistent, no solution possible."
+        success = false
+      end
+    }
+  rescue => error
+    options[:stderr].puts error
+    success = false
+  end
+  success
+end
+
+
+
+options = parse_options(ARGV)
+exit 1 if options.nil?
+
+if ARGV.empty? then
+  exit scan_and_resolve!($stdin.read, options) ? 0 : 1
+else
+  success = true
+  ARGV.each{|filename|
+    begin
+      success &= scan_and_resolve!(File.read(filename), options)
+    rescue IOError => error
+      $stderr.puts "Failed reading #{filename}, #{error}."
+    end
+  }
+  exit success ? 0 : 1
+end
+

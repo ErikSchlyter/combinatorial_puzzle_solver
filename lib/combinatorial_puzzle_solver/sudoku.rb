@@ -14,39 +14,45 @@ module CombinatorialPuzzleSolver
     # Parses a string where 1-9 are interpreted as values and 0 is interpreted as
     # unassigned, whereas all other characters (including whitespaces) are
     # discarded.
-    # It expects to find the correct amount of identifiers (81 for a 9x9 puzzle,
-    # which would be a puzzle with dimension 3).
     #
     # @param string [String] the input string.
     # @param dimension [Fixnum] Dimension 2 implies a 4x4 puzzle, 3 implies 9x9.
-    # @return [Sudoku] the parsed sudoku puzzle.
+    # @yieldparam sudoku [Sudoku] each parsed sudoku puzzle.
+    # @return [Array[Sudoku]] the parsed sudoku puzzles.
+    # @raise [RuntimeError] if the parsed digits don't match up to even puzzles.
     def self.scan(string, dimension=3)
-      sudoku = Sudoku.new(dimension)
-
       digits = string.scan(/\d/).collect{|value| value.to_i}
-
-      expected = sudoku.identifiers.size
-      unless digits.size == expected then
-        raise IOError.new("Parsed #{digits.size} digits instead of #{expected}).")
-      end
-
-      digits.each_with_index{|value, index|
-        unless value == 0 then
-          sudoku.identifiers[index].set!(value)
-        end
+      size = dimension**4
+      digits.each_slice(size).collect{|digits|
+        puzzle = Sudoku.new(dimension, digits)
+        yield puzzle if block_given?
+        puzzle
       }
-      sudoku
     end
 
     # Creates a new and empty sudoku puzzle, with all identifiers unassigned.
     # @param dimension [Fixnum] the dimension of the puzzle ('2' implies a 4x4 puzzle
     #                           and '3' implies a 9x9 puzzle).
-    def initialize(dimension=3)
+    # @param digits [Array[Fixnum]] an optional array of digits, where each digit
+    #                               corresponds to an identifier's value from 0 to 9.
+    # @raise [RuntimeError] if the digits array (if given) is of incorrect size.
+    def initialize(dimension=3, digits=[])
       @dimension = dimension
       @size = dimension*dimension
       super(@size*@size, (1..@size).to_a) {|identifier|
         (rows + columns + squares).collect{|group| Constraint.new(group) }
       }
+
+      unless digits.empty? then
+        unless digits.size == @size*@size then
+          error_msg = "Parsed #{digits.size} digits instead of #{@size*@size})."
+          raise RuntimeError.new(error_msg)
+        end
+
+        digits.each_with_index{|value, index|
+          identifiers[index].set!(value) unless value == 0
+        }
+      end
     end
 
     # @return [Array<Array<Identifier>>] the identifiers grouped by rows
@@ -84,11 +90,6 @@ module CombinatorialPuzzleSolver
       "[#{index / size + 1},#{index % size + 1}]"
     end
 
-    # @return [String] a string representation of an identifier, which would be
-    #                  "[row,column]=value"
-    def inspect_identifier(identifier)
-      identifier_to_s(identifier) << "=#{identifier.value.to_s}"
-    end
-  end
 
+  end
 end

@@ -26,6 +26,12 @@ module CombinatorialPuzzleSolver
 
     let!(:sudoku) { Sudoku.new }
 
+    describe "#new" do
+      it "should raise RuntimeError if digits contain wrong number of values" do
+        expect{ Sudoku.new(3, [1,2,3]) }.to raise_error(RuntimeError)
+      end
+    end
+
     describe "#rows" do
       it "should return an array of all identifiers grouped in rows." do
         expect(sudoku.rows).to be_a(Array)
@@ -60,9 +66,12 @@ module CombinatorialPuzzleSolver
                            300|405|008".gsub(/ /, '')}
 
     describe "#scan" do
-      it "should create a Sudoku puzzle and set the values" do
+      it "should create Sudoku puzzles and set the values" do
         illustrate puzzle_string, :label=>"Given the input string:"
-        sudoku = Sudoku.scan(puzzle_string)
+        sudokus = Sudoku.scan(puzzle_string)
+
+        expect(sudokus).to be_a(Array)
+        sudoku = sudokus.first
 
         illustrate sudoku.to_s, :label=>"It creates the puzzle:"
         expect(sudoku).to be_a(Sudoku)
@@ -73,32 +82,26 @@ module CombinatorialPuzzleSolver
         stripped = puzzle_string.gsub(/\D/,'')
         illustrate stripped, :label=>"Given the input string:"
 
-        sudoku = Sudoku.scan(stripped)
+        sudoku = Sudoku.scan(stripped).first
 
         illustrate sudoku.to_s, :label=>"It creates the puzzle:"
         expect(sudoku).to be_a(Sudoku)
-      end
-
-      it "should raise IOError if it scans the wrong number of digits" do
-        expect{ Sudoku.scan("123 foo bar") }.to raise_error(IOError)
       end
     end
 
 
     it "solves sudoku puzzles" do
-      sudoku = Sudoku.scan(puzzle_string)
+      sudoku = Sudoku.scan(puzzle_string).first
       illustrate sudoku.to_s, :label=>"Given the puzzle:"
 
-      solution = sudoku.resolve
+      solution = sudoku.resolved_solution_space
+      sudoku.set_resolved_identifiers!(solution)
 
-      # fill in the blanks into the original puzzle
-      solution.resolved_identifiers.each{|identifier, value| identifier.set!(value) }
       illustrate sudoku.to_s, :label=>"When resolved:"
 
       expect(solution.resolved?).to be true
     end
 
   end
-
 end
 

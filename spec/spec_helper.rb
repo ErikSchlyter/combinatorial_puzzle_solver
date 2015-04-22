@@ -17,6 +17,13 @@ module CombinatorialPuzzleSolver
         [ Constraint.new(identifiers[0..2]), Constraint.new(identifiers[2..4]) ]
       }
     end
+
+    def to_s
+      str = identifiers.collect{|identifier|
+        (identifier.has_value?) ? identifier.value.to_s : " "
+      }
+      "{#{str[0]}#{str[1]}[#{str[2]}}#{str[3]}#{str[4]}]"
+    end
   end
 end
 
