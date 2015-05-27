@@ -26,7 +26,7 @@ module CombinatorialPuzzleSolver
 
     let!(:sudoku) { Sudoku.new }
 
-    describe "#new" do
+    describe "#initialize" do
       it "should raise RuntimeError if digits contain wrong number of values" do
         expect{ Sudoku.new(3, [1,2,3]) }.to raise_error(RuntimeError)
       end
@@ -65,7 +65,7 @@ module CombinatorialPuzzleSolver
                            090|007|000
                            300|405|008".gsub(/ /, '')}
 
-    describe "#scan" do
+    describe ".scan" do
       it "should create Sudoku puzzles and set the values" do
         illustrate puzzle_string, :label=>"Given the input string:"
         sudokus = Sudoku.scan(puzzle_string)

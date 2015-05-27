@@ -1,31 +1,28 @@
 require "bundler/gem_tasks"
 Bundler.setup
 
-desc "Execute RSpec with default formatter"
-require "rspec/core/rake_task"
-RSpec::Core::RakeTask.new(:spec) do |t|
-  t.rspec_opts = "--format RSpec::Formatters::IllustratedDocumentationFormatter"
-end
-
-desc "Execute RSpec with HTML formatter"
-# RSpec - HTML output
-RSpec::Core::RakeTask.new(:html_spec) do |t|
-  t.rspec_opts = "--format RSpec::Formatters::IllustratedHtmlFormatter --out ./doc/rspec-results.html"
-end
-
-desc "Generate API documentation."
+require 'rake/clean'
 require 'yard'
+require 'rspec/illustrate/yard'
+require "rspec/core/rake_task"
+
+desc "Execute tests"
+RSpec::Core::RakeTask.new(:test)
+
+desc "Execute RSpec and create a test report at ./doc/api.rspec."
+RSpec::Core::RakeTask.new(:spec) do |t|
+  t.rspec_opts = "--format RSpec::Formatters::YARD --out ./doc/api.rspec"
+end
+
+desc "Create documentation."
 YARD::Rake::YardocTask.new(:doc) do |t|
-  t.files   = ['lib/**/*.rb', '-', 'doc/rspec-results.html', 'doc/examples.md' ]
+  t.files   = ['lib/**/*.rb', 'doc/api.rspec', '-', 'doc/api.rspec', 'doc/examples.md' ]
 end
-task :doc => [:html_spec, :examples]
+task :doc => [:spec, :examples]
+CLEAN.include("doc")
+CLEAN.include(".yardoc")
 
-desc "List the undocumented code."
-YARD::Rake::YardocTask.new(:list_undoc) do |t|
-  t.stats_options = ['--list-undoc']
-end
-
-# Generate examples and documentation
+desc "Create example documentation."
 require_relative 'example_puzzles/compile_examples'
 task :examples => ['doc/examples.md']
 file 'doc/examples.md' => FileList["example_puzzles/*"] do
@@ -34,7 +31,10 @@ file 'doc/examples.md' => FileList["example_puzzles/*"] do
   $stderr.puts "examples ok!"
 end
 
+desc "List the undocumented code."
+YARD::Rake::YardocTask.new(:list_undoc) do |t|
+  t.stats_options = ['--list-undoc']
+end
 
-task :test => [:spec, :examples]
 task :default => :doc
 

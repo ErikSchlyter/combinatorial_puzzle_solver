@@ -10,7 +10,7 @@ module CombinatorialPuzzleSolver
     let!(:identifiers) { puzzle.identifiers }
     let!(:solution_space) { SolutionSpace.new(puzzle) }
 
-    describe "#new" do
+    describe "#initialize" do
       it "is a Hash mapping between identifiers and their possible values" do
         expect(solution_space.keys).to all( be_an(Identifier) )
         expect(solution_space.values).to all( be_an(Possibilities) )

@@ -9,7 +9,7 @@ module CombinatorialPuzzleSolver
     let!(:symbols) { (1..5).to_a }
     let!(:puzzle) { SingleRowPuzzle.new(symbols) }
 
-    describe "#new" do
+    describe "#initialize" do
 
       it "should fail unless the block returns Constraint(s)" do
         expect { Puzzle.new(5, symbols) { "fubar" } }.to raise_error
