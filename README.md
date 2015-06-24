@@ -1,4 +1,4 @@
-# Combinatorial Puzzle Solver
+# Combinatorial Puzzle Solver [![Gem Version](https://badge.fury.io/rb/combinatorial_puzzle_solver.svg)](http://badge.fury.io/rb/combinatorial_puzzle_solver)
 
 A resolver of combinatorial number-placement puzzles, like Sudoku.
 
