@@ -74,13 +74,13 @@ module CombinatorialPuzzleSolver
     # @return [String] a simple string representation of the sudoku puzzle.
     def to_s
       horizontal = "\n#{Array.new(@dimension){"-" * (@dimension*2-1) }.join("+")}\n"
-      divisors = [horizontal, "\n", "|", " "]
+      separators = [" ", "|", "\n", horizontal]
 
-      strings = @identifiers.collect{|id| (id.has_value?) ? id.value.to_s : " "}
-      while divisor = divisors.pop do
-        strings = strings.each_slice(@dimension).collect{|s| s.join(divisor) }
-      end
-      strings.join
+      values = @identifiers.collect{|id| (id.has_value?) ? id.value.to_s : " "}
+      separators.each{|separator|
+        values = values.each_slice(@dimension).collect{|s| s.join(separator) }
+      }
+      values.join
     end
 
     # @return [String] a string representation of an identifier, which would be
