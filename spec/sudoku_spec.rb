@@ -48,7 +48,7 @@ module CombinatorialPuzzleSolver
 
     describe "#squares" do
       it "should return an array of all identifiers grouped in squares" do
-        expect(sudoku.columns).to be_a(Array)
+        expect(sudoku.squares).to be_a(Array)
         illustrate identifiers_grouped_by(sudoku.squares), :label=>"Squares"
       end
     end
