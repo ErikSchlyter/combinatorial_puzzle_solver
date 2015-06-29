@@ -67,7 +67,7 @@ module CombinatorialPuzzleSolver
 
     # @return [Array<Array<Identifier>>] the identifiers grouped by squares
     def squares
-      slices = @identifiers.each_slice(@dimension).each_slice(@dimension).to_a
+      slices = columns.flatten.each_slice(@dimension).each_slice(@dimension).to_a
       slices.transpose.flatten.each_slice(@size).to_a
     end
 
