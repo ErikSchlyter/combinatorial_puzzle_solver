@@ -2,6 +2,10 @@
 
 A resolver of combinatorial number-placement puzzles, like Sudoku.
 
+Source code at [https://github.com/ErikSchlyter/combinatorial_puzzle_solver](https://github.com/ErikSchlyter/combinatorial_puzzle_solver).
+
+Documentation at [http://www.erisc.se/combinatorial_puzzle_solver](http://www.erisc.se/combinatorial_puzzle_solver).
+
 ## Installation
 
 Add this line to your application's Gemfile:
